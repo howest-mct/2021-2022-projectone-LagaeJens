@@ -34,29 +34,29 @@ def setup_gpio():
 
 prevwaarde = 0
 
-def lees_knop():
-    global prevwaarde
-    i2c.open(1)
-    waarde = i2c.read_byte(0x21)
-    # print(waarde)
-    i2c.close()
-    if waarde != prevwaarde:
-        if waarde == 254:
-            print(waarde)
-            socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
-            DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
-        if waarde == 253:
-            print(waarde)
-            socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
-            DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
-        if waarde == 251:
-            print(waarde)
-            socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
-            DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
-        elif waarde == 255:
-            print(waarde)
-            socketio.emit('knop', {'knop': 'released'}, broadcast=True)
-    prevwaarde =  waarde
+# def lees_knop():
+#     global prevwaarde
+#     i2c.open(1)
+#     waarde = i2c.read_byte(0x21)
+#     # print(waarde)
+#     i2c.close()
+#     if waarde != prevwaarde:
+#         if waarde == 254:
+#             print(waarde)
+#             socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
+#             DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
+#         if waarde == 253:
+#             print(waarde)
+#             socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
+#             DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
+#         if waarde == 251:
+#             print(waarde)
+#             socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
+#             DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
+#         elif waarde == 255:
+#             print(waarde)
+#             socketio.emit('knop', {'knop': 'released'}, broadcast=True)
+#     prevwaarde =  waarde
 
 
 def lees_rfid(badgeid):
@@ -104,14 +104,39 @@ def initial_connection():
     # emit('B2F_status_lampen', {'lampen': status}, broadcast=True)
 
 
+@socketio.on('F2B_switch_light')
+def switch_light(data):
+    # Ophalen van de data
+    lamp_id = data['lamp_id']
+    new_status = data['new_status']
+    print(f"Lamp {lamp_id} wordt geswitcht naar {new_status}")
+
+    # Stel de status in op de DB
+    # res = DataRepository.update_status_lamp(lamp_id, new_status)
+
+    # Vraag de (nieuwe) status op van de lamp en stuur deze naar de frontend.
+    # data = DataRepository.read_status_lamp_by_id(lamp_id)
+    socketio.emit('B2F_verandering_lamp', {'lamp': data}, broadcast=True)
+
+    # Indien het om de lamp van de TV kamer gaat, dan moeten we ook de hardware aansturen.
+    # if lamp_id == '3':
+    #     print(f"TV kamer moet switchen naar {new_status} !")
+    #     GPIO.output(ledPin, new_status)
+
+
+
 # START een thread op. Belangrijk!!! Debugging moet UIT staan op start van de server, anders start de thread dubbel op
 # werk enkel met de packages gevent en gevent-websocket.
 
+# def start_thread():
+#     print("**** Starting THREAD ****")
+#     thread = threading.Thread(target=all_out, args=(), daemon=True)
+#     thread.start()
 
-def start_thread_lees_knop():
-    while True:
-        lees_knop()
-        time.sleep(0.5)
+# def start_thread_lees_knop():
+#     while True:
+#         # lees_knop()
+#         time.sleep(0.5)
 
 def rfid_thread(id):
     try:
@@ -134,18 +159,17 @@ def rfid_ID_thread_main():
     print('rfid_ID_thread_main')
     thread = threading.Thread(target=rfid_ID_thread, args=(), daemon=True)
     thread.start()
-
-def start_thread():
-    print("**** knop thread test ****")
-    thread = threading.Thread(target=start_thread_lees_knop, args=(), daemon=True)
-    thread.start()
+# def start_thread():
+#     print("**** knop thread test ****")
+#     thread = threading.Thread(target=start_thread_lees_knop, args=(), daemon=True)
+#     thread.start()
     
     
 def rfid_thread_main():
     print("**** knop thread test ****")
     # thread = threading.Thread(target=rfid_thread, args=(), daemon=True)
     # thread.start()
-    p = Process(target=rfid_thread, args=(id,))
+    p= Process(target=rfid_thread, args=(id,))
     p.start()
     
 

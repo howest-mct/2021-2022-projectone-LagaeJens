@@ -32,3 +32,11 @@ class DataRepository:
         sql = "UPDATE lampen SET status = %s"
         params = [status]
         return Database.execute_sql(sql, params)
+
+
+    @staticmethod
+    def insert_data(deviceid,actieid ,spelerid, actiedatum , waarde, commentaar ):
+        sql = "INSERT INTO Historiek (deviceid , actieid , spelerid, actiedatum , waarde , commentaar ) VALUES  (%s, %s, %s, %s, %s, %s)" 
+        params= [deviceid,actieid ,spelerid, actiedatum , waarde, commentaar]
+        return Database.execute_sql(sql, params)
+    
