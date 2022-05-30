@@ -2,6 +2,7 @@ import time
 from RPi import GPIO
 from helpers.klasseknop import Button
 import threading
+from smbus import SMBus
 
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
@@ -13,28 +14,39 @@ from selenium import webdriver
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
 
+i2c = SMBus(1)
 
-ledPin = 21
-btnPin = Button(20)
+
+# ledPin = 21
+# btnPin = Button(20)
 
 # Code voor Hardware
 def setup_gpio():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
 
-    GPIO.setup(ledPin, GPIO.OUT)
-    GPIO.output(ledPin, GPIO.LOW)
+    # GPIO.setup(ledPin, GPIO.OUT)
+    # GPIO.output(ledPin, GPIO.LOW)
     
-    btnPin.on_press(lees_knop)
 
 
-def lees_knop(pin):
-    if btnPin.pressed:
-        print("**** button pressed ****")
-        if GPIO.input(ledPin) == 1:
-            switch_light({'lamp_id': '3', 'new_status': 0})
-        else:
-            switch_light({'lamp_id': '3', 'new_status': 1})
+def lees_knop():
+    i2c.open(1)
+    waarde = i2c.read_byte(0x21)
+    # print(waarde)
+    i2c.close()
+    if waarde == 254:
+        print(waarde)
+        with app.test_request_context('/'):
+            socketio.emit('knop', {'knop': 'pressed'}, broadcast=True)
+    elif waarde == 255:
+        pass
+    #     print("**** button pressed ****")
+    #     if GPIO.input(ledPin) == 1:
+    #         switch_light({'lamp_id': '3', 'new_status': 0})
+    #     else:
+    #         switch_light({'lamp_id': '3', 'new_status': 1})
+
 
 
 
@@ -87,26 +99,28 @@ def switch_light(data):
     socketio.emit('B2F_verandering_lamp', {'lamp': data}, broadcast=True)
 
     # Indien het om de lamp van de TV kamer gaat, dan moeten we ook de hardware aansturen.
-    if lamp_id == '3':
-        print(f"TV kamer moet switchen naar {new_status} !")
-        GPIO.output(ledPin, new_status)
+    # if lamp_id == '3':
+    #     print(f"TV kamer moet switchen naar {new_status} !")
+    #     GPIO.output(ledPin, new_status)
 
 
 
 # START een thread op. Belangrijk!!! Debugging moet UIT staan op start van de server, anders start de thread dubbel op
 # werk enkel met de packages gevent en gevent-websocket.
-def all_out():
+
+# def start_thread():
+#     print("**** Starting THREAD ****")
+#     thread = threading.Thread(target=all_out, args=(), daemon=True)
+#     thread.start()
+
+def start_thread_lees_knop():
     while True:
-        print('*** We zetten alles uit **')
-        DataRepository.update_status_alle_lampen(0)
-        GPIO.output(ledPin, 0)
-        status = DataRepository.read_status_lampen()
-        socketio.emit('B2F_status_lampen', {'lampen': status})
-        time.sleep(15)
+        lees_knop()
+        time.sleep(0.5)
 
 def start_thread():
-    print("**** Starting THREAD ****")
-    thread = threading.Thread(target=all_out, args=(), daemon=True)
+    print("**** knop thread test ****")
+    thread = threading.Thread(target=start_thread_lees_knop, args=(), daemon=True)
     thread.start()
 
 
