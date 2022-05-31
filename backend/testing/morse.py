@@ -1,16 +1,23 @@
 from RPi import GPIO
 from time import sleep
 from smbus import SMBus
-
+from random import randint
 
 i2c = SMBus(1)
 
-
+def random_nummer_genereren():
+    random_nummer = randint(1, 9)
+    return random_nummer
 try:
+    test = random_nummer_genereren()
     while True:
         i2c.open(1)
         waarde = i2c.read_byte(0x24)
-        print(waarde)
+        cijfer = (waarde & 0x0F) ^ 0x0F 
+        print(cijfer)
+        # print(bin(cijfer))
+        print(test)
+        # print(bin(waarde))
         i2c.close()
         sleep(1)
     
@@ -38,11 +45,11 @@ finally:
 # try:
 #     while True:
 
-#         waarde1 = not GPIO.input(PinB1) 
-#         waarde2 = not GPIO.input(PinB2)
-#         waarde3 = not GPIO.input(PinB3)
-#         waarde4 = not GPIO.input(PinB4)
-#         # print(waarde1,waarde2,waarde3,waarde4)
+        # waarde1 = not GPIO.input(PinB1) 
+        # waarde2 = not GPIO.input(PinB2)
+        # waarde3 = not GPIO.input(PinB3)
+        # waarde4 = not GPIO.input(PinB4)
+        # print(waarde1,waarde2,waarde3,waarde4)
         
 #         result = waarde1  
 #         result = result | (waarde2<<1)
