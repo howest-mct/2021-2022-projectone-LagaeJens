@@ -63,7 +63,7 @@ def lees_rfid(badgeid):
     try:
         id, text = reader.read()
         badgeid.put([id])
-        print("lees rfid")
+        # print("lees rfid")
         print(id)
         print(text)
     except:
@@ -116,7 +116,7 @@ def start_thread_lees_knop():
 def rfid_thread(id):
     try:
         while True:
-            print('test')
+            # print('test')
             lees_rfid(id)
     except:
         print('error')
@@ -191,7 +191,7 @@ def start_chrome_thread():
 if __name__ == '__main__':
     try:
         setup_gpio()
-        # start_thread()
+        start_thread()
         rfid_thread_main()
         rfid_ID_thread_main()
         start_chrome_thread()
