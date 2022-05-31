@@ -8,18 +8,30 @@ i2c = SMBus(1)
 def random_nummer_genereren():
     random_nummer = randint(1, 9)
     return random_nummer
+
+def flash_led():
+    x = (test)*2
+    # print(x)
+    for i in range(x):
+        # print("aan")
+        waardes = i2c.read_byte(0x24)
+        cijfers = waardes ^ 0x10
+        i2c.write_byte(0x24, cijfers) 
+        sleep(0.5)
+
 try:
     test = random_nummer_genereren()
+    print(test)
     while True:
         i2c.open(1)
         waarde = i2c.read_byte(0x24)
         cijfer = (waarde & 0x0F) ^ 0x0F 
         print(cijfer)
         # print(bin(cijfer))
-        print(test)
         # print(bin(waarde))
+        flash_led()
         i2c.close()
-        sleep(1)
+        
     
 
 except KeyboardInterrupt as e:
