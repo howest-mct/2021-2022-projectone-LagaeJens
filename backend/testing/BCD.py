@@ -72,8 +72,8 @@ try:
         if cijfer == nummer_2:
             print("nr2 OK")
             e = False
-            break
-        sleep(1)
+            # break
+        sleep(0.5)
 
 
 
