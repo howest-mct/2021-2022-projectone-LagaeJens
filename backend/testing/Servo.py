@@ -18,12 +18,14 @@ pwm_servo.start(0)
 
 def servo_toGraden(waarde):
     duty = (waarde + 9)*(10/18)+2.5 #2.5
+    duty = round(duty,5)
     print(duty)
-    duty = round(duty,2)
     # Graden = round((180/1023)*waarde,2)
     # print(f"graden{Graden}")
     # pwm_servo.ChangeDutyCycle(duty)
     return duty
+
+prev_waarde = 0 
 
 try:
     mpu.setup(0x68)
@@ -35,9 +37,14 @@ try:
         # sleep(1)
         waarde = mpu.read_y_waarde()
         # print(waarde)
+        
         if waarde > -9 and waarde < 9:
-            value = servo_toGraden(waarde)
-            pwm_servo.ChangeDutyCycle(value)
+            # if prev_waarde - waarde > 0.1: 
+                value = servo_toGraden(waarde)
+                pwm_servo.ChangeDutyCycle(value)
+                sleep(0.02)
+                pwm_servo.ChangeDutyCycle(0)
+        prev_waarde = waarde
         
             
             
