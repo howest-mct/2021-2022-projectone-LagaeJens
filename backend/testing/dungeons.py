@@ -60,6 +60,32 @@ def buttons():
 
     i2c.close()
     
+def button_test():
+    i2c.open(1)
+    waarde = i2c.read_byte(0x20)
+    print(waarde)
+    if (waarde & 0x01) == 0:
+        led = i2c.read_byte(0x21)
+        var = (led & 0x10) >> 4
+        x = ((led & 0x1F)<< 1) | var# bitjes voor leds
+        y = led & 0xE0  #bitjes voor rgb niet veranderd
+        result = x | y
+        i2c.write_byte(0x21,result)
+    if (waarde & 0x02) == 0:
+        led = i2c.read_byte(0x21)
+        var = (led & 0x01) << 4
+        x = ((led & 0x1F)>> 1)| var  # bitjes voor leds
+        y = led & 0xE0  #bitjes voor rgb niet veranderd
+        result = x | y
+        i2c.write_byte(0x21,result)
+    if (waarde & 0x04) == 0:
+        led = i2c.read_byte(0x21)
+        i2c.write_byte(0x21,led ^ 0x10)
+    if (waarde & 0x08) == 0:
+        led = i2c.read_byte(0x21)
+        i2c.write_byte(0x21,led ^ 0x01)
+    i2c.close()
+    
 # def leds():
 #     i2c.open(1)
 #     i2c.write_byte(0x20,standaard)
@@ -75,7 +101,7 @@ try:
         # i2c.write_byte(0x21,~standaard)
         # test1=i2c.read_byte(0x21)
         # print(test)
-        buttons()
+        button_test()
         sleep(0.12)
         i2c.close()
         
