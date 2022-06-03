@@ -16,17 +16,17 @@ leds = [0b11110011, 0b11100111,0b11101110, 0b11111100, 0b11111001, 0b11110011]
 #     waarde = i2c.read_byte(0x20)
 #     # print(waarde)
 #     if waarde == 254:
-#         ledwaarde = i2c.read_byte(0x22)
+#         ledwaarde = i2c.read_byte(0x21)
 #         if(ledwaarde & 1 > 0):
 #             print(bin(ledwaarde))
 #             ledwaardes = ledwaarde << 1 | 0b00000001
 #             print(bin(ledwaardes))
-#             i2c.write_byte(0x22,ledwaardes)
+#             i2c.write_byte(0x21,ledwaardes)
 #         else:
 #             print(ledwaarde)
 #             ledwaardes = ledwaarde << 1
 #             print(ledwaardes)
-#             i2c.write_byte(0x22,ledwaardes)
+#             i2c.write_byte(0x21,ledwaardes)
 #     i2c.close()
 
 def buttons():
@@ -42,7 +42,7 @@ def buttons():
         else:
             teller += 1
             print(teller)
-            i2c.write_byte(0x22,leds[teller])
+            i2c.write_byte(0x21,leds[teller])
             print(bin(leds[teller]))
     if waarde == 253:
         if teller == 0:
@@ -50,13 +50,13 @@ def buttons():
         else:     
             teller -= 1
             print(teller)
-            i2c.write_byte(0x22,leds[teller])
+            i2c.write_byte(0x21,leds[teller])
             print(bin(leds[teller]))
             if teller <= 0:
                 teller = 5
     if waarde == 252:
         test =  not leds[teller]
-        i2c.write_byte(0x22,test)
+        i2c.write_byte(0x21,test)
 
     i2c.close()
     
@@ -67,13 +67,13 @@ def buttons():
 
 try:
     i2c.open(1)
-    i2c.write_byte(0x22,standaard)
+    i2c.write_byte(0x21,standaard)
     i2c.close()
     while True:
         i2c.open(1)
         # test=i2c.read_byte(0x20)
-        # i2c.write_byte(0x22,~standaard)
-        # test1=i2c.read_byte(0x22)
+        # i2c.write_byte(0x21,~standaard)
+        # test1=i2c.read_byte(0x21)
         # print(test)
         buttons()
         sleep(0.12)
