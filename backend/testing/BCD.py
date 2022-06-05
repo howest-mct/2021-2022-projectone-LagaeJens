@@ -64,7 +64,7 @@ def main():
             # cijfer = (waarde & 0x0F) ^ 0x0F 
             # print(cijfer)
             cijfer = bcd_uitlezen()
-            # print(bin(cijfer))
+            print(bin(cijfer))
             # print(bin(waarde))
             if cijfer == nummer_1:
                 print("nr1 OK")

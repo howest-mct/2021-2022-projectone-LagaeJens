@@ -8,6 +8,7 @@ class BCD:
     def __init__(self) -> None:
         self.f = False
         self.e = False
+        self.i2c = SMBus(1)
     
     
     def random_nummer_genereren(self):
@@ -15,45 +16,41 @@ class BCD:
         return random_nummer
     
     def flash_led_2(self,nummer):
-        i2c = SMBus(1)
-        i2c.open(1)   
+        self.i2c.open(1)   
         x = (nummer)*2
         # print(x)
         for i in range(x):
             # print("aan")
-            waardes = i2c.read_byte(0x24)
+            waardes = self.i2c.read_byte(0x24)
             cijfers = waardes ^ 0x20
-            i2c.write_byte(0x24, cijfers) 
+            self.i2c.write_byte(0x24, cijfers) 
             sleep(0.5)
-        i2c.close()
+        self.i2c.close()
            
            
     def flash_led_1(self,nummer):
-        i2c = SMBus(1)
-        i2c.open(1)  
+        self.i2c.open(1)  
         x = (nummer)*2
         # print(x)
         for i in range(x):
             # print("aan")
-            waardes = i2c.read_byte(0x24)
+            waardes = self.i2c.read_byte(0x24)
             cijfers = waardes ^ 0x10
-            i2c.write_byte(0x24, cijfers) 
+            self.i2c.write_byte(0x24, cijfers) 
             sleep(0.5)
-        i2c.close()
+        self.i2c.close()
         
     def bcd_uitlezen(self):
-        i2c = SMBus(1)
-        i2c.open(1) 
-        waarde = i2c.read_byte(0x24)
+        self.i2c.open(1) 
+        waarde = self.i2c.read_byte(0x24)
         cijfer = (waarde & 0x0F) ^ 0x0F 
         print(cijfer)
         print(bin(cijfer))
-        i2c.close()    
+        self.i2c.close()    
         return cijfer
     
     def setup(self):
-        i2c = SMBus(1)
-        i2c.open(1)
+        self.i2c.open(1)
         self.nummer_1 = self.random_nummer_genereren()
         self.nummer_2 = self.random_nummer_genereren() 
         self.f = False
@@ -90,6 +87,7 @@ class BCD:
                     print("nr2 OK")
                     self.e = False
                     # break
+                i2c.close()
                 sleep(0.5)
 
 
