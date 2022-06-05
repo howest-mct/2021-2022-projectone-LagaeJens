@@ -37,22 +37,34 @@ prevwaarde = 0
 def lees_knop():
     global prevwaarde
     i2c.open(1)
-    waarde = i2c.read_byte(0x21)
+    waarde = i2c.read_byte(0x22)
     # print(waarde)
     i2c.close()
     if waarde != prevwaarde:
-        if waarde == 254:
+        if (waarde & 0x01) == 0 :
             print(waarde)
             socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
             DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
-        if waarde == 253:
+        if (waarde & 0x02) == 0:
             print(waarde)
             socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
             DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
-        if waarde == 251:
+        if (waarde & 0x04) == 0:
             print(waarde)
             socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
             DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
+        if (waarde & 0x08) == 0:
+            print(waarde)
+            socketio.emit('knop', {'knop': 'Reedcontact 4'}, broadcast=True)
+            DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 4')
+        if (waarde & 16) == 0:
+            print(waarde)
+            socketio.emit('knop', {'knop': 'Reedcontact 5'}, broadcast=True)
+            DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 5')
+        if (waarde & 32) == 0:
+            print(waarde)
+            socketio.emit('knop', {'knop': 'Reedcontact 6'}, broadcast=True)
+            DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 6')
         elif waarde == 255:
             print(waarde)
             socketio.emit('knop', {'knop': 'released'}, broadcast=True)
