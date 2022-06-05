@@ -1,5 +1,5 @@
 from classen.bcd_classe import BCD
-from dungeons import dungeons
+from classen.dungeons import dungeons
 from time import sleep
 
 test=BCD()
