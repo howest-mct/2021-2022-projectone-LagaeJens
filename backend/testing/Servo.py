@@ -1,4 +1,4 @@
-from classen.classe_mpu import MPU6050
+from testing.classen.classe_mpu import MPU6050
 from time import sleep
 from RPi import GPIO
 
@@ -15,7 +15,7 @@ class Servo_Met_MPU():
         
         
     def setup(self):  
-        GPIO.setmode(GPIO.BCM)
+        # GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.servo, GPIO.OUT)
         GPIO.setup(self.servo2, GPIO.OUT)
         GPIO.setup(self.keuze_1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -85,8 +85,4 @@ class Servo_Met_MPU():
 
         except Exception as e:
             print(e)
-            pwm_servo.stop()
             #pass
-        finally:
-            pwm_servo.stop()
-            print("Servo_met_MPU stopped")
