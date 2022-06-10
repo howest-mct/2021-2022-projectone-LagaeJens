@@ -11,6 +11,7 @@ from datetime import datetime
 from testing.classen.bcd_classe import BCD
 from testing.Servo import Servo_Met_MPU
 from testing.classen.dungeons import dungeons
+from testing.classen.Class_I2C_LCD import LCD
 
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
@@ -21,7 +22,9 @@ from selenium import webdriver
 
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
-
+rs = 23
+e = 24
+lcd = LCD(rs,e)
 i2c = SMBus(1)
 servo = Servo_Met_MPU()	
 bcd = BCD()
@@ -50,51 +53,58 @@ def Shutdown(channel):
     os.system("sudo shutdown -h now")
 
 
-prevwaarde = 0
+prevwaarde = 1
 
 def lees_knop():
     try:
-        prevwaarde = 0
-        while True:    
-            i2c.open(1)
-            waarde = i2c.read_byte(0x22)
-            # print(waarde)
+        prevwaarde = 1
+        i2c.open(1)
+        waarde_RGB = i2c.read_byte(0x22)
+        if waarde_RGB == prevwaarde:
+            if (waarde_RGB & 128) == 0:
+                i2c.write_byte(0x22, waarde_RGB ^ 128)
+        else:
             i2c.close()
-            if waarde != prevwaarde:
-                if (waarde & 0x01) == 0 :
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
-                    DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
-                if (waarde & 0x02) == 0:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
-                    DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
-                if (waarde & 0x04) == 0:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
-                    DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
-                if (waarde & 0x08) == 0:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 4'}, broadcast=True)
-                    DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 4')
-                if (waarde & 16) == 0:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 5'}, broadcast=True)
-                    DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 5')
-                if (waarde & 32) == 0:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'Reedcontact 6'}, broadcast=True)
-                    DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 6')
-                # if (waarde & 63) == 0:
-                #     print('done')
-                #     socketio.emit('knop', {'knop': 'allemaal connected'}, broadcast=True)
-                #     DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 6')
-                #     return 1
-                elif waarde == 255:
-                    print(waarde)
-                    socketio.emit('knop', {'knop': 'released'}, broadcast=True)
-                prevwaarde =  waarde
-
+            while True:    
+                i2c.open(1)
+                waarde = i2c.read_byte(0x22)
+                print(bin(waarde))
+                i2c.close()
+                if waarde != prevwaarde:
+                    if (waarde & 0x01) == 0 :
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
+                        DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
+                    if (waarde & 0x02) == 0:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
+                        DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
+                    if (waarde & 0x04) == 0:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
+                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
+                    if (waarde & 0x08) == 0:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 4'}, broadcast=True)
+                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 4')
+                    if (waarde & 16) == 0:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 5'}, broadcast=True)
+                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 5')
+                    if (waarde & 32) == 0:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'Reedcontact 6'}, broadcast=True)
+                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 6')
+                    if waarde == 64:
+                        print('done')
+                        socketio.emit('knop', {'knop': 'allemaal connected'}, broadcast=True)
+                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Puzzlespel is klaar')
+                        return 1
+                    elif waarde == 255:
+                        print(waarde)
+                        socketio.emit('knop', {'knop': 'released'}, broadcast=True)
+                    prevwaarde =  waarde
+                    time.sleep(1)
     except Exception as e:
         print(e)
 
@@ -234,6 +244,7 @@ def lees_bcd_thread():
                 time.sleep(1)
     except Exception as e:
         print(e)
+
 
     
 def thread_read_bcd():
