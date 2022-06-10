@@ -70,6 +70,7 @@ class dungeons:
                 if self.f == False:
                     i2c=SMBus(1)
                     i2c.open(1)
+                    sleep(0.01)
                         # test=i2c.read_byte(0x20)
                         # i2c.write_byte(0x21,~standaard)
                         # test1=i2c.read_byte(0x21)
@@ -81,7 +82,7 @@ class dungeons:
                         print(f, "waarde f")
                         return 1
                     i2c.close()
-                    sleep(0.15)
+                    sleep(0.20)
 
                 else:
                     print("solveddddddd")

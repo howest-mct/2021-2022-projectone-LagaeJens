@@ -77,7 +77,7 @@ class LCD:
         i2c = SMBus()
         i2c.open(1)
         i2c.write_byte(0x23,value)
-        print("I2C is aangemaakt" , value)
+        # print("I2C is aangemaakt" , value)
         i2c.close()
 
     # Haalt alle ip adressen op die verbonden zijn. Nu eth0 & wlan0 tonen
