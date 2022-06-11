@@ -77,7 +77,7 @@ class LCD:
         i2c = SMBus()
         i2c.open(1)
         i2c.write_byte(0x23,value)
-        print("I2C is aangemaakt" , value)
+        # print("I2C is aangemaakt" , value)
         i2c.close()
 
     # Haalt alle ip adressen op die verbonden zijn. Nu eth0 & wlan0 tonen
@@ -97,3 +97,17 @@ class LCD:
         self.write_message_limit(ip_adress2)
         sleep(1.5)
         self.send_instruction(0x01)
+
+
+    def wifi_adress(self):
+        ip_adress = check_output(['hostname', '--all-ip-addresses'])
+        ip_adress = ip_adress.decode("utf-8")
+        ip_adress = ip_adress.split(" ")
+        # ip_adress1 = ip_adress[0]
+        ip_adress2 = ip_adress[1]
+        self.send_instruction(0x01)
+        self.write_message("IP adress wlan0: ")
+        self.send_instruction(0b10000000 | 0x40)
+        self.write_message_limit(ip_adress2)
+        sleep(1.5)
+        self.send_instruction(0x0C | 4)

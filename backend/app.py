@@ -22,8 +22,8 @@ from selenium import webdriver
 
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
-rs = 23
-e = 24
+rs = 19
+e = 26
 lcd = LCD(rs,e)
 i2c = SMBus(1)
 servo = Servo_Met_MPU()	
@@ -31,7 +31,7 @@ bcd = BCD()
 led_game = dungeons()
 # reader = SimpleMFRC522()
 
-id = Queue()
+id = Queue()   
 
 
 # Code voor Hardware
@@ -43,14 +43,19 @@ def setup_gpio():
     # servo.setup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(25, GPIO.OUT)
+    GPIO.output(25, GPIO.HIGH)
     GPIO.add_event_detect(18, GPIO.FALLING, callback=Shutdown, bouncetime=2000)
     # GPIO.setup(ledPin, GPIO.OUT)
     # GPIO.output(ledPin, GPIO.LOW)
 
 def Shutdown(channel):
-    print("Shutting Down")
+    print("Shutting down")
+    lcd.send_instruction(0x01)
+    lcd.write_message("Pi switched off")
     time.sleep(5)
-    os.system("sudo shutdown -h now")
+    # os.system("sudo shutdown -h now")
 
 
 prevwaarde = 1
@@ -59,16 +64,12 @@ def lees_knop():
     try:
         prevwaarde = 1
         i2c.open(1)
-        waarde_RGB = i2c.read_byte(0x22)
-        if waarde_RGB == prevwaarde:
-            if (waarde_RGB & 128) == 0:
-                i2c.write_byte(0x22, waarde_RGB ^ 128)
-        else:
-            i2c.close()
-            while True:    
+        i2c.write_byte(0x22, 0b01111111)
+        i2c.close()
+        while True:    
                 i2c.open(1)
                 waarde = i2c.read_byte(0x22)
-                print(bin(waarde))
+                print(waarde)
                 i2c.close()
                 if waarde != prevwaarde:
                     if (waarde & 0x01) == 0 :
@@ -99,6 +100,9 @@ def lees_knop():
                         print('done')
                         socketio.emit('knop', {'knop': 'allemaal connected'}, broadcast=True)
                         DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Puzzlespel is klaar')
+                        i2c.open(1)
+                        i2c.write_byte(0x22, 0b10111111)
+                        i2c.close()
                         return 1
                     elif waarde == 255:
                         print(waarde)
@@ -157,32 +161,42 @@ def initial_connection():
 # START een thread op. Belangrijk!!! Debugging moet UIT staan op start van de server, anders start de thread dubbel op
 # werk enkel met de packages gevent en gevent-websocket.
 
+var_d = False
 var_e = False
 var_f= False
 var_g = False
 
+
 def start_thread_lees_knop():
     try:
+        var_d = False
         var_e = False
         var_f = False
         var_g = False
         bcd.setup()
         while True:
+            if var_d == False:
+                waarde_bcd = bcd.main_BCD()
+                if waarde_bcd == 1:
+                    var_d = True
+                    print("bcd 1")
             if var_g == False:
-                if var_e == False:    
-                    waarde_knop = lees_knop()
-                    print(waarde_knop)
-                if waarde_knop == 1:
-                    var_e = True
-                    pass
-                if var_e == True:     
-                    if var_f == False:
-                        time.sleep(0.5)
-                        waarde_dungeons = led_game.dungeons_main()
-                        print(waarde_dungeons,"testtt")
-                        if waarde_dungeons == 1:
-                            var_f = True
-                            print("is true")
+                if var_d == True:
+                    if var_e == False:    
+                        waarde_knop = lees_knop()
+                        print(waarde_knop)
+                    if waarde_knop == 1:
+                        var_e = True
+                        print("e is true")
+                    if var_e == True:     
+                        if var_f == False:
+                            time.sleep(0.5)
+                            waarde_dungeons = led_game.dungeons_main()
+                            print(waarde_dungeons,"testtt")
+                            if waarde_dungeons == 1:
+                                var_f = True
+                                var_g = True
+                                print("is true")
             var_g == True
             time.sleep(1)
                 # servo.main_servo_met_mpu()
@@ -196,6 +210,27 @@ def start_thread_lees_knop():
     except Exception as e:
         print(e)
 
+
+def lcd_ip():
+    try:
+        lcd.setup_lcd()
+        #function set
+        lcd.send_instruction(0x38)
+        time.sleep(0.05)
+        #display aan
+        lcd.send_instruction(0x0C | 0x02 | 0x01)
+        time.sleep(0.05)
+        #display leegmaken 
+        lcd.send_instruction(0x01)
+        time.sleep(0.05)
+        lcd.wifi_adress()
+        
+        while True:
+            time.sleep(1)
+    except Exception as e:
+        print(e)
+        
+        
 # def rfid_thread(id):
 #     try:
 #         while True:
@@ -251,6 +286,11 @@ def thread_read_bcd():
     print("Thread BCD_reading")
     thread = threading.Thread(target=lees_bcd_thread, args=(), daemon=True)
     thread.start() 
+
+def lcd_thread():
+    print("Thread lcd")
+    thread = threading.Thread(target=lcd_ip, args=(), daemon=True)
+    thread.start() 
     
 def start_thread():
     print("**** knop thread test ****")
@@ -303,6 +343,7 @@ if __name__ == '__main__':
         start_thread()
         # rfid_thread_main()
         # rfid_ID_thread_main()
+        lcd_thread()
         start_chrome_thread()
         print("**** Starting APP ****")
         socketio.run(app, debug=False, host='0.0.0.0')

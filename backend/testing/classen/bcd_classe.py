@@ -81,7 +81,9 @@ class BCD:
                     self.e = True
                 if cijfer == self.nummer_2 and self.f == True:
                     print("nr2 OK")
+                    self.i2c.close()
                     self.e = False
+                    return 1
                     # break
                 sleep(0.5)
 

@@ -1,7 +1,8 @@
-from testing.classen.classe_mpu import MPU6050
+# from testing.classen.classe_mpu import MPU6050
+from classen.classe_mpu import MPU6050
 from time import sleep
 from RPi import GPIO
-
+from smbus import SMBus
 
 class Servo_Met_MPU():
     
@@ -12,6 +13,8 @@ class Servo_Met_MPU():
         self.keuze_2 = 23
         self.mpu = MPU6050(0x68,16,250)
         self.prev_waarde = 0
+        self.i2c = SMBus(1)
+        self.var_a = False
         
         
     def setup(self):  
@@ -49,34 +52,49 @@ class Servo_Met_MPU():
             pwm_servo2 = GPIO.PWM(self.servo2 , 50)  
             pwm_servo.start(0)
             pwm_servo2.start(0)
+            pwm_servo.ChangeDutyCycle(7.5)
+            sleep(0.02)
+            pwm_servo2.ChangeDutyCycle(7.5)
+            sleep(0.02)
+            pwm_servo.ChangeDutyCycle(0)
+            sleep(0.02)
+            pwm_servo2.ChangeDutyCycle(0)
+            sleep(0.02)
             while True:
-                knop1 = GPIO.input(self.keuze_1)
-                knop2 = GPIO.input(self.keuze_2)
-                waarde = self.mpu.read_y_waarde()
-                if knop1 == 0:
-                    print("knop1")        
-                    if waarde > -9 and waarde < 9:
-                    # if prev_waarde - waarde > 0.1: 
-                        value = self.servo_toGraden(waarde)
-                        pwm_servo.ChangeDutyCycle(value)
-                        sleep(0.02)
-                        pwm_servo.ChangeDutyCycle(0)
-                # pw    m_servo.ChangeDutyCycle(2.5)
-                # sleep(1)
-                # pwm_servo.ChangeDutyCycle(12)
-                # sleep(1)
-                # print(waarde)
-                if knop2 == 0:
-                    print("knop2") 
-                    if waarde > -9 and waarde < 9:
+                self.i2c.open(1)
+                waarde_reed1 = self.i2c.read_byte(0x26)
+                self.i2c.close()
+                if (waarde_reed1 & 0x04) == 0:
+                    self.var_a = True
+                if self.var_a == False:
+                    waarde = self.mpu.read_y_waarde()
+                    knop1 = GPIO.input(self.keuze_1)
+                    knop2 = GPIO.input(self.keuze_2)
+                    if knop1 == 0:
+                        print("knop1")        
+                        if waarde > -9 and waarde < 9:
                         # if prev_waarde - waarde > 0.1: 
-                        value = self.servo_toGraden(waarde)
-                        pwm_servo2.ChangeDutyCycle(value)
-                        sleep(0.02)
-                        pwm_servo2.ChangeDutyCycle(0)
-                self.prev_waarde = waarde
-
-
+                            value = self.servo_toGraden(waarde)
+                            pwm_servo.ChangeDutyCycle(value)
+                            sleep(0.02)
+                            pwm_servo.ChangeDutyCycle(0)
+                    # pw    m_servo.ChangeDutyCycle(2.5)
+                    # sleep(1)
+                    # pwm_servo.ChangeDutyCycle(12)
+                    # sleep(1)
+                    # print(waarde)
+                    if knop2 == 0:
+                        print("knop2") 
+                        if waarde > -9 and waarde < 9:
+                            # if prev_waarde - waarde > 0.1: 
+                            value = self.servo_toGraden(waarde)
+                            pwm_servo2.ChangeDutyCycle(value)
+                            sleep(0.02)
+                            pwm_servo2.ChangeDutyCycle(0)
+                    self.prev_waarde = waarde
+                if self.var_a == True:
+                    print("test")
+                    sleep(1)
 
 
 
