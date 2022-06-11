@@ -122,7 +122,7 @@ class MPU6050:
         i2c.open(1)
         waarde = i2c.read_i2c_block_data(self.address,register, aantal)
         # print("raw data: " ,waarde)
-        sleep(0.01)
+        sleep(0.02)
         return waarde
 
     def close(self):

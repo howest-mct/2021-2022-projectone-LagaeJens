@@ -15,6 +15,7 @@ class Servo_Met_MPU():
         self.prev_waarde = 0
         self.i2c = SMBus(1)
         self.var_a = False
+        self.var_b = False
         
         
     def setup(self):  
@@ -66,6 +67,10 @@ class Servo_Met_MPU():
                 self.i2c.close()
                 if (waarde_reed1 & 0x04) == 0:
                     self.var_a = True
+                waarde_reed2 = self.i2c.read_byte(0x26)
+                self.i2c.close()
+                if (waarde_reed2 & 0x08) == 0:
+                    self.var_b = True
                 if self.var_a == False:
                     waarde = self.mpu.read_y_waarde()
                     knop1 = GPIO.input(self.keuze_1)
@@ -93,6 +98,8 @@ class Servo_Met_MPU():
                             pwm_servo2.ChangeDutyCycle(0)
                     self.prev_waarde = waarde
                 if self.var_a == True:
+                    if self.var_b == True:
+                        return 1
                     print("test")
                     sleep(1)
 
