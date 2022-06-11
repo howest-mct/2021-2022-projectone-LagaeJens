@@ -22,8 +22,8 @@ from selenium import webdriver
 
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
-rs = 23
-e = 24
+rs = 19
+e = 26
 lcd = LCD(rs,e)
 i2c = SMBus(1)
 servo = Servo_Met_MPU()	
@@ -31,7 +31,7 @@ bcd = BCD()
 led_game = dungeons()
 # reader = SimpleMFRC522()
 
-id = Queue()
+id = Queue()   
 
 
 # Code voor Hardware
@@ -43,14 +43,19 @@ def setup_gpio():
     # servo.setup()
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(25, GPIO.OUT)
+    GPIO.output(25, GPIO.HIGH)
     GPIO.add_event_detect(18, GPIO.FALLING, callback=Shutdown, bouncetime=2000)
     # GPIO.setup(ledPin, GPIO.OUT)
     # GPIO.output(ledPin, GPIO.LOW)
 
 def Shutdown(channel):
-    print("Shutting Down")
+    print("Shutting down")
+    lcd.send_instruction(0x01)
+    lcd.write_message("Pi switched off")
     time.sleep(5)
-    os.system("sudo shutdown -h now")
+    # os.system("sudo shutdown -h now")
 
 
 prevwaarde = 1
@@ -190,6 +195,7 @@ def start_thread_lees_knop():
                             print(waarde_dungeons,"testtt")
                             if waarde_dungeons == 1:
                                 var_f = True
+                                var_g = True
                                 print("is true")
             var_g == True
             time.sleep(1)
