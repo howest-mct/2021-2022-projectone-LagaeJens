@@ -77,7 +77,7 @@ class MPU6050:
         y_juist = round(y_juist,2)
         z2 = self.twee_complementen(z)
         z_juist = z2 / range
-        z_juist = round(z_juist,2)
+        z_juist = round(z_juist,1)
         print(f"X ", x_juist,"Y",y_juist,"Z",z_juist)
         print("som accelerometer",x_juist+y_juist+z_juist)
         

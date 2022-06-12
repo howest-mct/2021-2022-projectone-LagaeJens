@@ -12,6 +12,7 @@ from testing.classen.bcd_classe import BCD
 from testing.Servo import Servo_Met_MPU
 from testing.classen.dungeons import dungeons
 from testing.classen.Class_I2C_LCD import LCD
+from testing.class_neopixel import neopixel_class
 
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
@@ -19,9 +20,10 @@ from flask import Flask, jsonify
 from repositories.DataRepository import DataRepository
 
 from selenium import webdriver
-
 # from selenium import webdriver
 # from selenium.webdriver.chrome.options import Options
+
+
 rs = 19
 e = 26
 lcd = LCD(rs,e)
@@ -29,6 +31,7 @@ i2c = SMBus(1)
 servo = Servo_Met_MPU()	
 bcd = BCD()
 led_game = dungeons()
+neopixel = neopixel_class()
 # reader = SimpleMFRC522()
 
 id = Queue()   
@@ -55,12 +58,12 @@ def Shutdown(channel):
     lcd.send_instruction(0x01)
     lcd.write_message("Pi switched off")
     time.sleep(5)
-    # os.system("sudo shutdown -h now")
+    os.system("sudo shutdown -h now")
 
 
 prevwaarde = 1
 
-def lees_knop():
+def quiz_game():
     try:
         prevwaarde = 1
         i2c.open(1)
@@ -164,7 +167,7 @@ var_d = False
 var_e = False
 var_f= False
 var_g = False
-
+var_h = False
 
 def start_thread_lees_knop():
     try:
@@ -172,6 +175,7 @@ def start_thread_lees_knop():
         var_e = False
         var_f = False
         var_g = False
+        var_h = False
         bcd.setup()
         while True:
             if var_d == False:
@@ -182,7 +186,7 @@ def start_thread_lees_knop():
             if var_g == False:
                 if var_d == True:
                     if var_e == False:    
-                        waarde_knop = lees_knop()
+                        waarde_knop = quiz_game()
                         print(waarde_knop)
                     if waarde_knop == 1:
                         var_e = True
@@ -194,17 +198,29 @@ def start_thread_lees_knop():
                             print(waarde_dungeons,"testtt")
                             if waarde_dungeons == 1:
                                 var_f = True
-                                var_g = True
                                 print("is true")
-            var_g == True
+                    if var_f == True:
+                        if var_g == False:
+                            thread_read_mpu()
+                            waarde_servogame = servo.main_servo_met_mpu()
+                            print(waarde_servogame , "servo")
+                            if waarde_servogame == 1:
+                                var_g = True
+                                var_h = True
+                        
+            var_h == True
+            
             time.sleep(1)
                 # servo.main_servo_met_mpu()
             
             
             if var_g == True:
                 print("truuuuuuuue")
+                neopixel.all_green()
+                if GPIO.input(13) == 1:
+                    print("button pressed")
+                    neopixel.rainbow_cycle()
                 
-                time.sleep(5)
             
     except Exception as e:
         print(e)
@@ -258,6 +274,19 @@ def lcd_ip():
 #     p = Process(target=rfid_thread, args=(id,))
 #     p.start()
 
+def lees_mpu_thread_function():
+    try:
+        while True:
+            # print('test')
+            waarde = servo.mpu_data_to_front()
+            DataRepository.insert_data(8, 8,8, datetime.now(), waarde , 'MPU data naar front')
+    except Exception as e:
+        print(e)
+
+def thread_read_mpu():
+    print("Thread MPU_reading")
+    thread = threading.Thread(target=lees_mpu_thread_function, args=(), daemon=True)
+    thread.start()
 
 def lees_bcd_thread():
     try:
@@ -273,7 +302,7 @@ def lees_bcd_thread():
                     time.sleep(0.5)
                 else:
                     time.sleep(0.5)
-                    print('niet juste')
+                    print('niets geschreven')
                 vorige_waarde_bcd = waarde
                 time.sleep(1)
     except Exception as e:
@@ -338,8 +367,9 @@ def start_chrome_thread():
 if __name__ == '__main__':
     try:
         setup_gpio()
-        # thread_read_bcd()
         start_thread()
+        thread_read_bcd()
+        # thread_read_mpu()
         # rfid_thread_main()
         # rfid_ID_thread_main()
         lcd_thread()
