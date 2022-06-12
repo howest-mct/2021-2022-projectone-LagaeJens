@@ -9,7 +9,11 @@
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"
         integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
         crossorigin="anonymous"></script>
+    <script src="script/handledata.js"></script>
     <script src="script/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+        crossorigin="anonymous"></script>
     <link rel="stylesheet" href="style/normalize.css" />
     <link rel="stylesheet" href="style/screen.css" />
 </head>
@@ -54,6 +58,25 @@
             </div>
         </div>
     </header>
+    <section>
+        <div class="o-layout o-layout--justify-center">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>volgnummer</th>
+                        <th>deviceid</th>
+                        <th>actieid</th>
+                        <th>spelerid</th>
+                        <th>actiedatum</th>
+                        <th>Waarde</th>
+                        <th>commentaar</th>
+                    </tr>
+                </thead>
+                <tbody class="js-tabel">
+                </tbody>
+            </table>
+        </div>
+    </section>
     <section>
         <div class="o-layout o-layout--justify-center">
             <p class="js-placeholder">dummy</p>

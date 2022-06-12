@@ -48,4 +48,9 @@ class neopixel_class():
         for i in range(self.num_pixels):
             self.pixels[i] = (0, 255, 0)
         self.pixels.show()
+        
+    def all_red(self):
+        for i in range(self.num_pixels):
+            self.pixels[i] = (255, 0, 0)
+        self.pixels.show()
 

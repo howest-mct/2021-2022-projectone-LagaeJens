@@ -22,6 +22,7 @@ const waardeNaarFrontendBCD = function (data) {
 }
 
 
+
 const listenToUI = function () {
 };
 
@@ -46,4 +47,52 @@ document.addEventListener("DOMContentLoaded", function () {
   console.info("DOM geladen");
   listenToUI();
   listenToSocket();
+  get_Data_historiek();
 });
+
+
+// #region ***  DOM references                           ***********
+// #endregion
+
+// #region ***  Callback-Visualisation - show___         ***********
+const show_data_historiek = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let h of data.geschiedenis) {
+      console.log(h)
+      html += `<tr>
+                        <th>${h.volgnummer}</th>
+                        <th>${h.deviceid}</th>
+                        <th>${h.actieid}</th>
+                        <th>${h.spelerid}</th>
+                        <th>${h.actiedatum}</th>
+                        <th>${h.waarde}</th>
+                        <th>${h.commentaar}</th>
+                    </tr>`
+    }
+    document.querySelector('.js-tabel').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+// #endregion
+
+// #region ***  Callback-No Visualisation - callback___  ***********
+// #endregion
+
+// #region ***  Data Access - get___                     ***********
+const get_Data_historiek = function () {
+  console.log('get_Data_historiek')
+  console.log(lanIP)
+  handleData(`http://${lanIP}/api/v1/historiek/`, show_data_historiek);
+}
+// #endregion
+
+// #region ***  Event Listeners - listenTo___            ***********
+// #endregion
+
+// #region ***  Init / DOMContentLoaded                  ***********
+
+// #endregion

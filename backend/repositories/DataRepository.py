@@ -40,3 +40,8 @@ class DataRepository:
         params= [deviceid,actieid ,spelerid, actiedatum , waarde, commentaar]
         return Database.execute_sql(sql, params)
     
+    
+    @staticmethod
+    def historiek_data_ophalen():
+        sql = "SELECT * from Historiek Order by volgnummer Desc"
+        return Database.get_rows(sql)
