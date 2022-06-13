@@ -23,8 +23,7 @@ const waardeNaarFrontendBCD = function (data) {
 
 
 
-const listenToUI = function () {
-};
+
 
 const listenToSocket = function () {
   socket.on("connect", function () {
@@ -45,9 +44,17 @@ const listenToSocket = function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   console.info("DOM geladen");
+  htmlhistoriek = document.querySelector('.js-historiek')
+  htmlspel = document.querySelector('.js-spel');
+
   listenToUI();
   listenToSocket();
-  get_Data_historiek();
+  if (htmlspel) {
+    listenStartbutton();
+  }
+  if (htmlhistoriek) {
+    get_Data_historiek();
+  }
 });
 
 
@@ -62,13 +69,13 @@ const show_data_historiek = function (data) {
     for (let h of data.geschiedenis) {
       console.log(h)
       html += `<tr>
-                        <th>${h.volgnummer}</th>
-                        <th>${h.deviceid}</th>
-                        <th>${h.actieid}</th>
-                        <th>${h.spelerid}</th>
-                        <th>${h.actiedatum}</th>
-                        <th>${h.waarde}</th>
-                        <th>${h.commentaar}</th>
+                        <td>${h.volgnummer}</td>
+                        <td>${h.deviceid}</td>
+                        <td>${h.actieid}</td>
+                        <td>${h.spelerid}</td>
+                        <td>${h.actiedatum}</td>
+                        <td>${h.waarde}</td>
+                        <td>${h.commentaar}</td>
                     </tr>`
     }
     document.querySelector('.js-tabel').innerHTML = html;
@@ -91,6 +98,15 @@ const get_Data_historiek = function () {
 // #endregion
 
 // #region ***  Event Listeners - listenTo___            ***********
+const listenToUI = function () {
+  console.log('listenToUI')
+};
+const listenStartbutton = function () {
+  console.log('listenStartbutton')
+  document.querySelector('.js-startbutton').addEventListener('click', function () {
+    socket.emit('f_2_b_knop');
+  })
+}
 // #endregion
 
 // #region ***  Init / DOMContentLoaded                  ***********

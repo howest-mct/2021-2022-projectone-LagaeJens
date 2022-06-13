@@ -6,11 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Puzzledoos</title>
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"
+    integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
+    crossorigin="anonymous"></script>
+  <script src="script/handledata.js"></script>
+  <script src="script/app.js"></script>
   <link rel="stylesheet" href="style/normalize.css" />
   <link rel="stylesheet" href="style/screen.css" />
 </head>
 
-<body>
+<body class="js-spel">
   <header class="o-row o-row--md o-row--header">
     <div class="o-container">
       <div class="c-header">
@@ -55,7 +60,7 @@
     </div>
     <div class="o-layout o-layout--justify-center">
 
-      <input type="text" name="test" id="test" />
+      <input type="text" name="naam" id="naam" required />
     </div>
     <div class="o-layout o-layout--justify-center">
       <label for="kaarten">Kies een kaart: </label>
@@ -72,7 +77,7 @@
     <div class="o-layout o-layout--justify-center">
       <nav class="c-nav c-nav--meta">
         <p class="c-header__cta_main">
-          <a href="spel_starten.html" class="c-link-cta_main">Spel starten</a>
+          <a href="spel_starten.html" class="c-link-cta_main js-startbutton">Spel starten</a>
         </p>
       </nav>
     </div>

@@ -41,13 +41,13 @@ try:
     # #display leegmaken 
     # lcd.send_instruction(0x01)
     # sleep(0.05)
-    # # test.setup()
+    test.setup()
     while True:
-        if var_a == False:
-            id = rfid.uitlezen()
-            waarde_id = id
-            if waarde_id == 458664380192 :
-                var_a = True
+        # if var_a == False:
+        #     id = rfid.uitlezen()
+        #     waarde_id = id
+        #     if waarde_id == 458664380192 :
+        #         var_a = True
         # if var_a == False:
         #     i2c.open(1)
         # # i2c.write_byte(0x20, 0x00)
@@ -60,8 +60,8 @@ try:
         # lcd.send_instruction(0x01) #display leegmaken
         # lcd.ip_adress_ophalen() 
         # lcd.send_instruction(0x0C)
-        # dungeon.dungeons_main()
-        # test.main_BCD()
+        dungeon.dungeons_main()
+        test.main_BCD()
         sleep(1)
     
         

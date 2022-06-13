@@ -49,7 +49,7 @@ def main():
         print(nummer_1)
         print(nummer_2)
         i2c.open(1)
-
+        
 
         while True:
             if f == False:

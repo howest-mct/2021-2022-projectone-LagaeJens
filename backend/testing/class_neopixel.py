@@ -49,6 +49,57 @@ class neopixel_class():
             self.pixels[i] = (0, 255, 0)
         self.pixels.show()
         
+    #make 1/4 of the pixels green rest in red
+    def green_red_1_4(self):
+        self.pixels[0] = (0, 255, 0)
+        self.pixels[1] = (0, 255, 0)
+        self.pixels[2] = (0, 255, 0)
+        self.pixels[3] = (255, 0, 0)
+        self.pixels[4] = (255, 0, 0)
+        self.pixels[5] = (255, 0, 0)
+        self.pixels[6] = (255, 0, 0)
+        self.pixels[7] = (255, 0, 0)
+        self.pixels[8] = (255, 0, 0)
+        self.pixels[9] = (255, 0, 0)
+        self.pixels[10] = (255, 0, 0)
+        self.pixels[11] = (255, 0, 0)
+        self.pixels.show()
+        
+    def green_red_2_4(self):
+        self.pixels[0] = (0, 255, 0)
+        self.pixels[1] = (0, 255, 0)
+        self.pixels[2] = (0, 255, 0)
+        self.pixels[3] = (0, 255, 0)
+        self.pixels[4] = (0, 255, 0)
+        self.pixels[5] = (0, 255, 0)
+        self.pixels[6] = (255, 0, 0)
+        self.pixels[7] = (255, 0, 0)
+        self.pixels[8] = (255, 0, 0)
+        self.pixels[9] = (255, 0, 0)
+        self.pixels[10] = (255, 0, 0)
+        self.pixels[11] = (255, 0, 0)
+        self.pixels.show()
+        
+    def green_red_3_4(self):
+        self.pixels[0] = (0, 255, 0)
+        self.pixels[1] = (0, 255, 0)
+        self.pixels[2] = (0, 255, 0)
+        self.pixels[3] = (0, 255, 0)
+        self.pixels[4] = (0, 255, 0)
+        self.pixels[5] = (0, 255, 0)
+        self.pixels[6] = (0,255, 0)
+        self.pixels[7] = (0,255, 0)
+        self.pixels[8] = (0,255, 0)
+        self.pixels[9] = (255, 0, 0)
+        self.pixels[10] = (255, 0, 0)
+        self.pixels[11] = (255, 0, 0)
+        self.pixels.show()
+    
+    # def all_orange(self):
+    #     for i in range(self.num_pixels):
+    #         self.pixels[i] = (255, 165, 0)
+    #     self.pixels.show()
+        
     def all_red(self):
         for i in range(self.num_pixels):
             self.pixels[i] = (255, 0, 0)

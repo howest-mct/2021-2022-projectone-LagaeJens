@@ -43,5 +43,5 @@ class DataRepository:
     
     @staticmethod
     def historiek_data_ophalen():
-        sql = "SELECT * from Historiek Order by volgnummer Desc"
+        sql = "SELECT * from Historiek Order by volgnummer Desc limit 100"
         return Database.get_rows(sql)

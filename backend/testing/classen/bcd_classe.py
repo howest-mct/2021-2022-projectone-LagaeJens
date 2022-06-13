@@ -46,6 +46,7 @@ class BCD:
     
     def setup(self):
         self.nummer_1 = self.random_nummer_genereren()
+        sleep(0.002)
         self.nummer_2 = self.random_nummer_genereren() 
         if self.nummer_1 == self.nummer_2:
             self.nummer_2 = self.random_nummer_genereren()
@@ -56,6 +57,8 @@ class BCD:
     
     def main_BCD(self):	
         try:
+            # self.i2c.open(1)
+            self.i2c.write_byte(0x24, 0b10111111)
             print('main')
             while True:
                 i2c = SMBus(1)
@@ -74,6 +77,7 @@ class BCD:
                 # print(cijfer)
                 cijfer = self.bcd_uitlezen()
                 # print(bin(cijfer))
+                # print(bin(cijfer))
                 # print(bin(waarde))
                 if cijfer == self.nummer_1:
                     print("nr1 OK")
@@ -81,10 +85,12 @@ class BCD:
                     self.e = True
                 if cijfer == self.nummer_2 and self.f == True:
                     print("nr2 OK")
-                    self.i2c.close()
+                    i2c.write_byte(0x24, 0b01111111)
                     self.e = False
+                    
                     return 1
                     # break
+                i2c.close()
                 sleep(0.5)
 
 
