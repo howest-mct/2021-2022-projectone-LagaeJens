@@ -65,7 +65,10 @@ class Servo_Met_MPU():
             # sleep(0.02)
             # pwm_servo2.ChangeDutyCycle(0)
             # sleep(0.02)
+            self.var_a = False
+            self.var_b = False
             while True:
+                
                 self.i2c.open(1)
                 waarde_reed1 = self.i2c.read_byte(0x26)
                 if (waarde_reed1 & 0x04) == 0:

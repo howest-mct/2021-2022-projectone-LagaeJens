@@ -15,7 +15,7 @@ class rfid_lezen:
                                 reader = SimpleMFRC522()
                                 id = reader.read()
                                 print(id[0])
-                                sleep(1)
+                                sleep(0.005)
                                 return id[0]
 
 

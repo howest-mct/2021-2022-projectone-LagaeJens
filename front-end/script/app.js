@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
   console.info("DOM geladen");
   htmlhistoriek = document.querySelector('.js-historiek')
   htmlspel = document.querySelector('.js-spel');
+  htmlvragen = document.querySelector('.js-vragen');
 
   listenToUI();
   listenToSocket();
@@ -54,6 +55,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   if (htmlhistoriek) {
     get_Data_historiek();
+  }
+  if (htmlvragen) {
+    Get_vragen();
   }
 });
 
@@ -71,7 +75,6 @@ const show_data_historiek = function (data) {
       html += `<tr>
                         <td>${h.volgnummer}</td>
                         <td>${h.deviceid}</td>
-                        <td>${h.actieid}</td>
                         <td>${h.spelerid}</td>
                         <td>${h.actiedatum}</td>
                         <td>${h.waarde}</td>
@@ -84,6 +87,28 @@ const show_data_historiek = function (data) {
   }
 
 }
+
+const show_vragen = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let v of data.vragen) {
+      console.log(v)
+      html += `<div class="o-layout o-layout--justify-center">
+            <div>
+                <p>${v.vraag}</p>
+            </div>
+        </div>
+        <div class="o-layout o-layout--justify-center">
+            <div>
+                <p>${v.antwoord}</p>
+            </div>
+        </div>`}
+    document.querySelector('.js-vraag').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+}
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
@@ -94,6 +119,10 @@ const get_Data_historiek = function () {
   console.log('get_Data_historiek')
   console.log(lanIP)
   handleData(`http://${lanIP}/api/v1/historiek/`, show_data_historiek);
+}
+const Get_vragen = function () {
+  console.log('vragen opgehaald')
+  handleData(`http://${lanIP}/api/v1/vragen/`, show_vragen);
 }
 // #endregion
 

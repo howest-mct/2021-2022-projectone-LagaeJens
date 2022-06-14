@@ -55,7 +55,6 @@ class dungeons:
     def read_buttons(self):  #gemaakt om buttons uit te lezen om in database te zetten
         i2c=SMBus(1)
         i2c.open(1)
-        i2c.open(1)
         buttons = i2c.read_byte(0x20)
         print(buttons)
         i2c.close()
@@ -93,9 +92,6 @@ class dungeons:
                         return 1
                     sleep(0.20)
 
-                else:
-                    print("solveddddddd")
-                    exit()
                         
 
         except Exception as e:

@@ -43,5 +43,10 @@ class DataRepository:
     
     @staticmethod
     def historiek_data_ophalen():
-        sql = "SELECT * from Historiek Order by volgnummer Desc limit 100"
+        sql = "SELECT volgnummer , deviceid, spelerid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc limit 100"
+        return Database.get_rows(sql)
+    
+    @staticmethod
+    def ophalen_vragen():
+        sql = "SELECT * from vraag order by RAND() limit 6"
         return Database.get_rows(sql)
