@@ -192,7 +192,10 @@ a:focus {
 /*------------------------------------*\
   #OBJECTS
 \*------------------------------------*/
-
+.kotjes_vragen {
+  border-style: solid;
+  border-color: #287ec7;
+}
 /*
     Objects: Row
     ---

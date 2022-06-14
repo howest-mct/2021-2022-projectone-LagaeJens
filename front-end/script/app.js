@@ -95,12 +95,12 @@ const show_vragen = function (data) {
     for (let v of data.vragen) {
       console.log(v)
       html += `<div class="o-layout o-layout--justify-center">
-            <div>
+            <div <p class="kotjes_vragen">
                 <p>${v.vraag}</p>
             </div>
         </div>
         <div class="o-layout o-layout--justify-center">
-            <div>
+            <div<p class="kotjes_vragen">
                 <p>${v.antwoord}</p>
             </div>
         </div>`}
