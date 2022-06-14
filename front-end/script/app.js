@@ -93,22 +93,53 @@ const show_vragen = function (data) {
   try {
     let html = ''
     for (let v of data.vragen) {
-      console.log(v)
-      html += `<div class="o-layout o-layout--justify-center">
-            <div <p class="kotjes_vragen">
-                <p>${v.vraag}</p>
+      // console.log(v)
+      html = `<div class="o-container js-vraag">     
+             <div class="o-layout o-layout--justify-center o-layout--gutter-xl">
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 1: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>${v.antwoord}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 2: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>antwoord</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 3: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>antwoord</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 4: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>antwoord</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 5: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>antwoord</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>vraag 6: ${v.vraag}</p>
+                </div>
+                <div class="card o-layout__item u-1-of-2">
+                    <p>antwoord</p>
+                </div>
             </div>
-        </div>
-        <div class="o-layout o-layout--justify-center">
-            <div<p class="kotjes_vragen">
-                <p>${v.antwoord}</p>
-            </div>
-        </div>`}
+            </div>`}
     document.querySelector('.js-vraag').innerHTML = html;
   } catch (error) {
     console.error(error);
   }
 }
+
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********

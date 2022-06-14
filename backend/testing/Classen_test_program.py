@@ -1,6 +1,6 @@
 from classen.bcd_classe import BCD
 from classen.dungeons import dungeons
-from Servo import Servo_Met_MPU
+# from Servo import Servo_Met_MPU
 from classen.Class_I2C_LCD import LCD 
 from classen.test_rfid import rfid_lezen
 from time import sleep
@@ -25,7 +25,7 @@ def Shutdown(channel):
     sleep(5)
     os.system("sudo poweroff")
      
-servo= Servo_Met_MPU()
+# servo= Servo_Met_MPU()
 test=BCD()
 dungeon = dungeons()
 try:
@@ -61,7 +61,7 @@ try:
         # lcd.send_instruction(0x0C)
         # dungeon.dungeons_main()
         # test.main_BCD()
-            sleep(1)
+        sleep(1)
     
         
         

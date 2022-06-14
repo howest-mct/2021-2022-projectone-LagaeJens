@@ -7,12 +7,13 @@ from multiprocessing import Process, Queue
 from smbus import SMBus
 from datetime import datetime
 # classes voor games
+from mfrc522 import SimpleMFRC522
 from testing.classen.bcd_classe import BCD
 from testing.Servo import Servo_Met_MPU
 from testing.classen.dungeons import dungeons
 from testing.classen.Class_I2C_LCD import LCD
 from testing.class_neopixel import neopixel_class
-from testing.classen.test_rfid import rfid_lezen
+# from testing.classen.test_rfid import rfid_lezen
 
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
@@ -32,12 +33,14 @@ servo = Servo_Met_MPU()
 bcd = BCD()
 led_game = dungeons()
 neopixel = neopixel_class()
-rfid = rfid_lezen
-
+# rfid = rfid_lezen
+reader = SimpleMFRC522()
 id = Queue()   
 
 
 # Code voor Hardware
+starttijd = 0
+eindtijd = 0
 var_b = False
 var_c = False
 var_d = False
@@ -124,18 +127,18 @@ def quiz_game():
         print(e)
 
 
-# def lees_rfid(badgeid):
-#     try:
-#         id = reader.read()
-#         badgeid.put([id])
-#         # print("lees rfid")
-#         print(id[0])
-#         time.sleep(1)
-#         return id[0]
-#     except:
-#         print("errortrr")
+def lees_rfid(badgeid):
+    try:
+        id = reader.read()
+        badgeid.put([id])
+        print("lees rfid")
+        print(id[0])
+        time.sleep(1)
+        return id[0]
+    except:
+        print("errortrr")
     
-        
+        #
 # Code voor Flask
 
 app = Flask(__name__)
@@ -185,8 +188,10 @@ def f_2_b_knop():
     global var_b
     global var_c
     global var_g
+    global var_i
     var_b = True
     var_c = False
+    var_i = False
     bcd.setup()
     print('f_2_b_knop')
     
@@ -198,6 +203,8 @@ def f_2_b_knop():
 
 def start_thread_lees_knop():
     try:
+        global starttijd
+        global eindtijd
         global var_b
         global var_c
         global var_d
@@ -215,12 +222,16 @@ def start_thread_lees_knop():
                 if var_c == False:
                     neopixel.all_red()
                     print('rfid actief')
-                    waarde_id = rfid.uitlezen()
+                    waarde_id = rfid_ID_thread()
                     print(waarde_id)
                     if waarde_id == 458664380192:
+                        starttijd = datetime.now()
                         var_c = True
                         var_j = True
                         var_g = False
+                    else:
+                        time.sleep(0.001)
+                        print('sleeping')
                 if var_g == False:
                     if var_d == False:
                         if var_c == True:
@@ -284,6 +295,9 @@ def start_thread_lees_knop():
                         print("ke geschreven")
                         var_b = False
                         var_g = False
+                        eindtijd = datetime.now()
+                        tijd_database = eindtijd - starttijd
+                        
                         DataRepository.insert_data(10, 10, 10, datetime.now(), waarde , 'Eindknop')
                         waarde = prev
                 
@@ -312,33 +326,33 @@ def lcd_ip():
         print(e)
         
         
-# def rfid_thread(id):
-#     try:
-#         while True:
-#             # print('test')
-#             lees_rfid(id)
-#     except:
-#         print('error')
+def rfid_thread(id):
+    try:
+        while True:
+            # print('test')
+            lees_rfid(id)
+    except:
+        print('error')
   
-# def rfid_ID_thread():
-#     try:
-#         while True:
-#             lijst = id.get()
-#             print(lijst[0])
-#     except:
-#         print('error')
+def rfid_ID_thread():
+    try:
+        while True:
+            lijst = id.get()
+            print(lijst[0])
+    except:
+        print('error')
 
-# def rfid_ID_thread_main():
-#     print('rfid_ID_thread_main')
-#     thread = threading.Thread(target=rfid_ID_thread, args=(), daemon=True)
-#     thread.start()
+def rfid_ID_thread_main():
+    print('rfid_ID_thread_main')
+    thread = threading.Thread(target=rfid_ID_thread, args=(), daemon=True)
+    thread.start()
 
-# def rfid_thread_main():
-#     print("**** knop thread test ****")
-#     # thread = threading.Thread(target=rfid_thread, args=(), daemon=True)
-#     # thread.start()
-#     p = Process(target=rfid_thread, args=(id,))
-#     p.start()
+def rfid_thread_main():
+    print("**** knop thread test ****")
+    # thread = threading.Thread(target=rfid_thread, args=(), daemon=True)
+    # thread.start()
+    p = Process(target=rfid_thread, args=(id,))
+    p.start()
 
 def lees_mpu_thread_function():
     try:
@@ -470,6 +484,8 @@ if __name__ == '__main__':
     try:
         setup_gpio()
         start_thread()
+        rfid_ID_thread_main()
+        rfid_ID_thread_main()
         # thread_read_mpu()
         thread_read_bcd()
         thread_read_mpu()
