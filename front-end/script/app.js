@@ -22,8 +22,8 @@ const waardeNaarFrontendBCD = function (data) {
 }
 
 
-const listenToUI = function () {
-};
+
+
 
 const listenToSocket = function () {
   socket.on("connect", function () {
@@ -44,6 +44,100 @@ const listenToSocket = function () {
 
 document.addEventListener("DOMContentLoaded", function () {
   console.info("DOM geladen");
+  htmlhistoriek = document.querySelector('.js-historiek')
+  htmlspel = document.querySelector('.js-spel');
+  htmlvragen = document.querySelector('.js-vragen');
+
   listenToUI();
   listenToSocket();
+  if (htmlspel) {
+    listenStartbutton();
+  }
+  if (htmlhistoriek) {
+    get_Data_historiek();
+  }
+  if (htmlvragen) {
+    Get_vragen();
+  }
 });
+
+
+// #region ***  DOM references                           ***********
+// #endregion
+
+// #region ***  Callback-Visualisation - show___         ***********
+const show_data_historiek = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let h of data.geschiedenis) {
+      console.log(h)
+      html += `<tr>
+                        <td>${h.volgnummer}</td>
+                        <td>${h.deviceid}</td>
+                        <td>${h.spelerid}</td>
+                        <td>${h.actiedatum}</td>
+                        <td>${h.waarde}</td>
+                        <td>${h.commentaar}</td>
+                    </tr>`
+    }
+    document.querySelector('.js-tabel').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+const show_vragen = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let v of data.vragen) {
+      console.log(v)
+      html += `<div class="o-layout o-layout--justify-center">
+            <div>
+                <p>${v.vraag}</p>
+            </div>
+        </div>
+        <div class="o-layout o-layout--justify-center">
+            <div>
+                <p>${v.antwoord}</p>
+            </div>
+        </div>`}
+    document.querySelector('.js-vraag').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+}
+// #endregion
+
+// #region ***  Callback-No Visualisation - callback___  ***********
+// #endregion
+
+// #region ***  Data Access - get___                     ***********
+const get_Data_historiek = function () {
+  console.log('get_Data_historiek')
+  console.log(lanIP)
+  handleData(`http://${lanIP}/api/v1/historiek/`, show_data_historiek);
+}
+const Get_vragen = function () {
+  console.log('vragen opgehaald')
+  handleData(`http://${lanIP}/api/v1/vragen/`, show_vragen);
+}
+// #endregion
+
+// #region ***  Event Listeners - listenTo___            ***********
+const listenToUI = function () {
+  console.log('listenToUI')
+};
+const listenStartbutton = function () {
+  console.log('listenStartbutton')
+  document.querySelector('.js-startbutton').addEventListener('click', function () {
+    socket.emit('f_2_b_knop');
+  })
+}
+// #endregion
+
+// #region ***  Init / DOMContentLoaded                  ***********
+
+// #endregion

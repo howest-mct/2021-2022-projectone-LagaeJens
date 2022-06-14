@@ -33,7 +33,10 @@ class Servo_Met_MPU():
 
     # 100%/20 = 50hz
 
-
+    def mpu_data_to_front(self):
+        waarde=self.mpu.read_y_waarde()
+        sleep(0.5)
+        return waarde
   
 
     def servo_toGraden(self,waarde):
@@ -53,18 +56,19 @@ class Servo_Met_MPU():
             pwm_servo = GPIO.PWM(self.servo , 50)
             pwm_servo2 = GPIO.PWM(self.servo2 , 50)  
             pwm_servo.start(0)
-            sleep(0.02)
             pwm_servo2.start(0)
-            sleep(0.02)
             pwm_servo.ChangeDutyCycle(5)
-            sleep(0.02)
+            sleep(0.1)
             pwm_servo2.ChangeDutyCycle(5)
-            sleep(0.02)
-            pwm_servo.ChangeDutyCycle(0)
-            sleep(0.02)
-            pwm_servo2.ChangeDutyCycle(0)
-            sleep(0.02)
+            sleep(0.1)
+            # pwm_servo.ChangeDutyCycle(0)
+            # sleep(0.02)
+            # pwm_servo2.ChangeDutyCycle(0)
+            # sleep(0.02)
+            self.var_a = False
+            self.var_b = False
             while True:
+                
                 self.i2c.open(1)
                 waarde_reed1 = self.i2c.read_byte(0x26)
                 if (waarde_reed1 & 0x04) == 0:
@@ -110,7 +114,6 @@ class Servo_Met_MPU():
                 if self.var_a == True:
                     if self.var_b == True:
                         return 1
-                    sleep(1)
 
 
 

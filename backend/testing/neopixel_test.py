@@ -45,13 +45,13 @@ def wheel(pos):
     return (r, g, b) if ORDER in (neopixel.RGB, neopixel.GRB) else (r, g, b, 0)
 
 
-def rainbow_cycle(wait):
+def rainbow_cycle():
     for j in range(255):
         for i in range(num_pixels):
             pixel_index = (i * 256 // num_pixels) + j
             pixels[i] = wheel(pixel_index & 255)
         pixels.show()
-        time.sleep(wait)
+        time.sleep(0.001)
 
 
 while True:
@@ -76,4 +76,4 @@ while True:
     # pixels.show()
     # time.sleep(1)
 
-    rainbow_cycle(0.005)  # rainbow cycle with 1ms delay per step
+    rainbow_cycle()  # rainbow cycle with 1ms delay per step

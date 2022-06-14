@@ -6,7 +6,7 @@ class dungeons:
 
     def __init__(self) -> None:
         self.i2c = SMBus(1)
-        self.standaard = 0b10110011
+        self.standaard = 0b11110011
         self.f = False
         # self.leds = [0b11110011, 0b11100111,0b11101110, 0b11111100, 0b11111001, 0b11110011]
 
@@ -53,9 +53,11 @@ class dungeons:
         return leds
     
     def read_buttons(self):  #gemaakt om buttons uit te lezen om in database te zetten
-        self.i2c.open(1)  
-        buttons = self.i2c.read_byte(0x20)
-        self.i2c.close()
+        i2c=SMBus(1)
+        i2c.open(1)
+        buttons = i2c.read_byte(0x20)
+        print(buttons)
+        i2c.close()
         return buttons
     
     f = False
@@ -65,6 +67,8 @@ class dungeons:
             f = False
             self.i2c.open(1)
             self.i2c.write_byte(0x21,self.standaard)
+            sleep(0.002)
+            self.i2c.write_byte(0x20,0b11011111)
             self.i2c.close()
             while True:
                 if self.f == False:
@@ -76,17 +80,18 @@ class dungeons:
                         # test1=i2c.read_byte(0x21)
                         # print(test)
                     self.buttons()
-                    led = i2c.read_byte(0x21)                        # print(bin(led))
-                    if led == 0xA0:
+                    led = i2c.read_byte(0x21)
+                    # print(bin(led))
+                    i2c.close()
+                    if led == 0xE0:
                         f = True
                         print(f, "waarde f")
+                        i2c.open(1)
+                        i2c.write_byte(0x20,0b11101111)
+                        i2c.close()
                         return 1
-                    i2c.close()
                     sleep(0.20)
 
-                else:
-                    print("solveddddddd")
-                    exit()
                         
 
         except Exception as e:
