@@ -2,6 +2,7 @@ const lanIP = `${window.location.hostname}:5000`;
 const socket = io(`http://${lanIP}`);
 
 let htmlsensor
+let myChart
 
 const waardeNaarFrontend = function (data) {
   let htmlstring = ''
@@ -14,8 +15,8 @@ const waardeNaarFrontend = function (data) {
 
 const waardeNaarFrontendBCD = function (data) {
   let htmlstring = ''
-  console.log(data.BCD)
-  console.log(document.querySelector('.js-placeholderr'))
+  // console.log(data.BCD)
+  // console.log(document.querySelector('.js-placeholderr'))
   htmlsensor = document.querySelector('.js-placeholderr').innerHTML = `<p>${data.BCD}</p>`
   // htmlstring =`<p>${data.knop}</p>`
   // htmlsensor.innerhtml = htmlstring
@@ -30,7 +31,7 @@ const listenToSocket = function () {
   });
 
   socket.on('BCD', function (data) {
-    console.log(data)
+    // console.log(data)
     waardeNaarFrontendBCD(data)
   });
 
@@ -39,6 +40,12 @@ const listenToSocket = function () {
     console.log(data)
     waardeNaarFrontend(data)
   });
+
+  socket.on('BCD B2F'), function (data) {
+    console.log(data)
+    // go to vragen.html
+    window.location.href = "vragen.html"
+  }
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -47,15 +54,19 @@ document.addEventListener("DOMContentLoaded", function () {
   htmlspel = document.querySelector('.js-spel');
   htmlvragen = document.querySelector('.js-vragen');
   htmlspelerinfo = document.querySelector('.js-spelerinfo');
-  get_speler_data()
+  // get_speler_data()
   listenToUI();
   listenToSocket();
   if (htmlspel) {
     listenStartbutton();
     get_top_tijden()
+    listenToStartbutton2();
   }
   if (htmlhistoriek) {
     get_Data_historiek();
+    waardeNaarFrontendBCD()
+    waardeNaarFrontend()
+
   }
   if (htmlvragen) {
     Get_vragen();
@@ -92,52 +103,52 @@ const show_data_historiek = function (data) {
 
 }
 
+const shuffle = function (array) {
+  for (var i = array.length - 1; i > 0; i--) {
+
+    // Generate random number
+    var j = Math.floor(Math.random() * (i + 1));
+
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+
+  return array;
+}
+
 const show_vragen = function (data) {
   console.log(data)
   try {
+    vraagcounter = 1
+    let coounter = 0
+    let counter = 0
     let html = ''
+    let vragen = []
+    let bloknums = [3, 1, 5, 4, 6, 2]
+    for (let x of data.vragen) {
+      answer = `${bloknums[counter]}   |   ${x.antwoord}`
+      vragen.push(answer)
+      counter += 1
+    }
+    console.log(vragen)
+    vragen_1 = shuffle(vragen)
+    console.log(vragen_1)
     for (let v of data.vragen) {
       // console.log(v)
-      html = `<div class="o-container js-vraag">     
+      html += `<div class="o-container js-vraag">     
              <div class="o-layout o-layout--justify-center o-layout--gutter-xl">
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 1: ${v.vraag}</p>
+                <div class="card o-layout__item u-1-of-3">
+                    <p>vraag ${vraagcounter}: ${v.vraag}</p>
                 </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>${v.antwoord}</p>
+                <div class="card o-layout__item u-1-of-3">
+                    <p>bloknr: ${vragen[coounter]}</p>
                 </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 2: ${v.vraag}</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>antwoord</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 3: ${v.vraag}</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>antwoord</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 4: ${v.vraag}</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>antwoord</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 5: ${v.vraag}</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>antwoord</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>vraag 6: ${v.vraag}</p>
-                </div>
-                <div class="card o-layout__item u-1-of-2">
-                    <p>antwoord</p>
-                </div>
-            </div>
-            </div>`}
+            </div>`;
+      coounter += 1
+      vraagcounter += 1
+    }
+
     document.querySelector('.js-vraag').innerHTML = html;
   } catch (error) {
     console.error(error);
@@ -168,23 +179,26 @@ const show_top_tijden = function (data) {
 const chart_data = function (data) {
   console.log(data)
   try {
-    let converted_data = []
-    for (let t in data.geschied_speler) {
-      // console.log(t.substring(0, 4))
-      // if ('00:00' == t.substring(0, 4)) { console.log(t) }
-      // converted_data.push(t)
-    }
-  } catch (error) {
+    let converted_data = [data.geschied_speler.spel_1, data.geschied_speler.spel_2, data.geschied_speler.spel_3, data.geschied_speler.spel_4]
+    console.log(converted_data);
+    myChart.data.datasets.forEach((dataset) => {
+      dataset.data.push(converted_data)
+    });
+    myChart.update();
+  }
+  catch (error) {
     console.error(error);
   }
 }
 
 
+
+
 const chart = function () {
-  var stars = [135850, 52122, 148825, 16939, 9763];
-  var frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
-  var ctx = document.getElementById('myChart');
-  var myChart = new Chart(ctx, {
+  let stars = [135850, 52122];
+  let frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
+  let ctx = document.getElementById('myChart');
+  myChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: frameworks,
@@ -206,6 +220,8 @@ const chart = function () {
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
+
+
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
@@ -239,9 +255,32 @@ function listenToUI() {
 const listenStartbutton = function () {
   console.log('listenStartbutton')
   document.querySelector('.js-startbutton').addEventListener('click', function () {
-    socket.emit('f_2_b_knop');
-  })
+    socket.emit('f_2_b_knop')
+  });
 }
+
+const show_insert_klaar = function (jsonObject) {
+  console.log('ok')
+}
+
+const listenToStartbutton2 = function () {
+  console.log('listenToStartbutton2')
+  try {
+    document.querySelector('.js-startbutton').addEventListener('click', function () {
+      const jsonObject = JSON.stringify({
+        naam: document.querySelector('.js-naam').value,
+        kaartnummer: parseInt(document.querySelector('.js-kaart').value)
+      })
+      console.log(jsonObject)
+      handleData(`http://${lanIP}/api/v1/spelerinlog/`, show_insert_klaar, null, 'POST', jsonObject);
+    })
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
 // #endregion
 
 

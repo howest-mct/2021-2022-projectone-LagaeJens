@@ -178,13 +178,22 @@ def historiek_speler(speler_id):
         data = DataRepository.get_tijden(speler_id)
         return jsonify(geschied_speler=data)
 
-@app.route('/api/v1/spelerinlog/' , methods=['GET'])
+@app.route('/api/v1/spelerinlog/' , methods=['GET','POST'])
 def top_times():
     if request.method == 'GET':
         print('Top times')
         data = DataRepository.get_top_times()
         print(data)	
         return jsonify(top_times=data)
+    if request.method == 'POST':
+        print('add speler')
+        print(request)
+        gegevens = DataRepository.json_or_formdata(request)
+        data = DataRepository.add_speler(gegevens['naam'],gegevens['kaartnummer'],datetime.now())
+        print(data)
+        return jsonify(speler=data), 200
+
+
 
 @socketio.on('f_2_b_knop')
 def f_2_b_knop():
@@ -226,13 +235,21 @@ def start_thread_lees_knop():
                 if var_c == False:
                     neopixel.all_red()
                     print('rfid actief')
+                    lcd.send_instruction(0x01)
+                    time.sleep(0.1)
+                    lcd.write_message('RFID SCANNEN')
+                    time.sleep(5)
                     waarde_id = id_rfid
                     # print(waarde_id)
-                    if waarde_id == 288120969494:
+                    if waarde_id != 0:
+                        DataRepository.insert_data(13, 1, 1, datetime.now(), waarde_id , 'RFID gescand')
                         var_c = True
                         var_j = True
                         var_g = False
                         starttijd = datetime.now()
+                        lcd.send_instruction(0x01)
+                        time.sleep(0.1)
+                        lcd.wifi_adress()
                 if var_g == False:
                     if var_d == False:
                         if var_c == True:
@@ -240,6 +257,7 @@ def start_thread_lees_knop():
                             if waarde_bcd == 1:
                                 spel_1 = datetime.now()
                                 var_d = True
+                                socketio.emit('BCD B2F')
                                 var_j = False
                                 print("bcd 1")
                 if var_d == True:
@@ -362,13 +380,17 @@ def rfid_ID_thread_main():
 def lees_mpu_thread_function():
     try:
         while True:
-            i2c.open(1)
-            waarde_i2c = i2c.read_byte(0x26)
-            i2c.close()
-            if (waarde_i2c & 0x02) == 0:
-                # print('test')
-                waarde = servo.mpu_data_to_front()
-                DataRepository.insert_data(8, 8,8, datetime.now(), waarde , 'MPU data naar front')
+            try:
+                i2c.open(1)
+                waarde_i2c = i2c.read_byte(0x26)
+                i2c.close()
+                if (waarde_i2c & 0x02) == 0:
+                    # print('test')
+                    waarde = servo.mpu_data_to_front()
+                    DataRepository.insert_data(8, 8,8, datetime.now(), waarde , 'MPU data naar front')
+                time.sleep(1)
+            except Exception as e:
+                print("mpu error:" , e)
     except Exception as e:
         print(e)
 
@@ -381,6 +403,7 @@ def lees_buttons():
     try:
         global var_i
         while True:
+            try:
                 # print('test')
                 if var_i == True:
                     waarde = led_game.read_buttons()
@@ -390,9 +413,11 @@ def lees_buttons():
                         print("ke buttons geschreven")
                         DataRepository.insert_data(9, 9, 9, datetime.now(), waarde , 'Buttons')
                     time.sleep(0.5)
-                # else:
-                #     time.sleep(0.5)
+                else:
+                    time.sleep(1)
                 #     print('niets buttons geschreven')
+            except Exception as e:
+                print("lees_buttons:" ,e)
     except Exception as e:
         print(e)
 
@@ -425,6 +450,7 @@ def lees_bcd_thread():
                     time.sleep(0.5)
                     print('niets geschreven')
                 vorige_waarde_bcd = waarde
+            else:
                 time.sleep(1)
     except Exception as e:
         print(e)
@@ -490,7 +516,7 @@ if __name__ == '__main__':
         setup_gpio()
         start_thread()
         rfid_ID_thread_main()
-        # thread_read_mpu()
+        thread_read_mpu()
         thread_read_bcd()
         thread_read_mpu()
         thread_read_buttons()

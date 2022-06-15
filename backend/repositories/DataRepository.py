@@ -80,3 +80,9 @@ class DataRepository:
     def get_top_times():
         sql = "select * from tijd order by totale_tijd limit 3"
         return Database.get_rows(sql)
+    
+    @staticmethod
+    def add_speler(naam,kaartnummer,datum_gespeeld):
+        sql = "INSERT INTO speler (naam , kaartnummer, datum_gespeeld) VALUES (%s,%s,%s)"
+        params = [naam, kaartnummer, datum_gespeeld]
+        return Database.execute_sql(sql, params)
