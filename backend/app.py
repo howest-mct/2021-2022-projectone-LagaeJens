@@ -171,13 +171,20 @@ def vragen():
         data = DataRepository.ophalen_vragen()
         return jsonify(vragen=data)
     
-@app.route('/api/v1/historiek/<speler_id>' , methods=['GET'])
+@app.route('/api/v1/spelersinfo/<speler_id>/' , methods=['GET'])
 def historiek_speler(speler_id):
     if request.method == 'GET':
-        print('Historiek')
-        data = DataRepository.historiek_data_ophalen_speler(speler_id)
+        print('Historiek speler')
+        data = DataRepository.get_tijden(speler_id)
         return jsonify(geschied_speler=data)
 
+@app.route('/api/v1/spelerinlog/' , methods=['GET'])
+def top_times():
+    if request.method == 'GET':
+        print('Top times')
+        data = DataRepository.get_top_times()
+        print(data)	
+        return jsonify(top_times=data)
 
 @socketio.on('f_2_b_knop')
 def f_2_b_knop():
@@ -218,7 +225,7 @@ def start_thread_lees_knop():
             if var_b == True:
                 if var_c == False:
                     neopixel.all_red()
-                    # print('rfid actief')
+                    print('rfid actief')
                     waarde_id = id_rfid
                     # print(waarde_id)
                     if waarde_id == 288120969494:
@@ -335,10 +342,11 @@ def rfid_thread():
     try:
         global id_rfid
         while True:
+                    print("rfid running")
                     id_rfid = reader.read()
                     id_rfid = id_rfid[0]
                     print(id_rfid)
-                    time.sleep(0.01)
+                    time.sleep(0.5)
                     
     except:
         print('error')

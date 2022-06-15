@@ -71,6 +71,12 @@ class DataRepository:
     
     @staticmethod
     def get_tijden(spelerid):
-        sql = "select * from tijd where spelerid = %s"
+        sql = "SELECT * FROM tijd WHERE spelerid = %s"
         params = [spelerid]
-        return Database.get_rows(sql,params)
+        return Database.get_one_row(sql,params)
+    
+    
+    @staticmethod 
+    def get_top_times():
+        sql = "select * from tijd order by totale_tijd limit 3"
+        return Database.get_rows(sql)

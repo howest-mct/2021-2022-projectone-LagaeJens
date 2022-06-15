@@ -2,10 +2,9 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Puzzledoos</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"
         integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
         crossorigin="anonymous"></script>
@@ -14,9 +13,11 @@
     <script src="script/app.js"></script>
     <link rel="stylesheet" href="style/normalize.css" />
     <link rel="stylesheet" href="style/screen.css" />
+    <title>Document</title>
 </head>
 
-<body class="js-historiek">
+<body class="js-spelerinfo">
+
     <header class="o-row o-row--md o-row--header">
         <div class="o-container">
             <div class="c-header">
@@ -56,45 +57,12 @@
             </div>
         </div>
     </header>
-    <section>
+    <div class="o-container">
         <div class="o-layout o-layout--justify-center">
+            <canvas id="myChart" width="800" height="400"></canvas>
+        </div>
+    </div>
 
-        </div>
-    </section>
-    <section>
-        <div class="o-container">
-            <div class="o-layout_tabel o-layout--justify-center">
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>deviceid</th>
-                            <th>volgnummer</th>
-                            <th>spelerid</th>
-                            <th>actiedatum</th>
-                            <th>Waarde</th>
-                            <th>commentaar</th>
-                        </tr>
-                    </thead>
-                    <tbody class="js-tabel">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-    <section>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholder">dummy</p>
-        </div>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholderr">dummy</p>
-        </div>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholdeer">dummy</p>
-        </div>
-    </section>
-    <section>
-        <div id="js-chart"></div>
-    </section>
 </body>
 
 </html>

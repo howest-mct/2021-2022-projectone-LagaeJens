@@ -1,4 +1,3 @@
-import ApexCharts from 'apexcharts'
 const lanIP = `${window.location.hostname}:5000`;
 const socket = io(`http://${lanIP}`);
 
@@ -25,7 +24,6 @@ const waardeNaarFrontendBCD = function (data) {
 
 
 
-
 const listenToSocket = function () {
   socket.on("connect", function () {
     console.log("verbonden met socket webserver");
@@ -48,18 +46,22 @@ document.addEventListener("DOMContentLoaded", function () {
   htmlhistoriek = document.querySelector('.js-historiek')
   htmlspel = document.querySelector('.js-spel');
   htmlvragen = document.querySelector('.js-vragen');
-
+  htmlspelerinfo = document.querySelector('.js-spelerinfo');
+  get_speler_data()
   listenToUI();
   listenToSocket();
   if (htmlspel) {
     listenStartbutton();
+    get_top_tijden()
   }
   if (htmlhistoriek) {
-    myChart()
     get_Data_historiek();
   }
   if (htmlvragen) {
     Get_vragen();
+  }
+  if (htmlspelerinfo) {
+    chart()
   }
 });
 
@@ -142,27 +144,98 @@ const show_vragen = function (data) {
   }
 }
 
+const show_top_tijden = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let t of data.top_times) {
+      console.log(t)
+      html += `<tr>
+                        <td>${t.spel_1}</td>
+                        <td>${t.spel_2}</td>
+                        <td>${t.spel_3}</td>
+                        <td>${t.spel_4}</td>
+                        <td>${t.totale_tijd}</td>
+                    </tr>`
+    }
+    document.querySelector('.js-toptijden').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+const chart_data = function (data) {
+  console.log(data)
+  try {
+    let converted_data = []
+    for (let t in data.geschied_speler) {
+      // console.log(t.substring(0, 4))
+      // if ('00:00' == t.substring(0, 4)) { console.log(t) }
+      // converted_data.push(t)
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+const chart = function () {
+  var stars = [135850, 52122, 148825, 16939, 9763];
+  var frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
+  var ctx = document.getElementById('myChart');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: frameworks,
+      datasets: [{
+        label: 'Spel 1',
+        data: stars,
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)"
+        ]
+      }]
+    },
+  });
+
+}
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
 // #endregion
 
 // #region ***  Data Access - get___                     ***********
-const get_Data_historiek = function () {
-  console.log('get_Data_historiek')
-  console.log(lanIP)
+function get_Data_historiek() {
+  console.log('get_Data_historiek');
+  console.log(lanIP);
   handleData(`http://${lanIP}/api/v1/historiek/`, show_data_historiek);
 }
 const Get_vragen = function () {
   console.log('vragen opgehaald')
   handleData(`http://${lanIP}/api/v1/vragen/`, show_vragen);
+
 }
+
+const get_top_tijden = function () {
+  console.log('get_top_tijden')
+  handleData(`http://${lanIP}/api/v1/spelerinlog/`, show_top_tijden);
+}
+
+const get_speler_data = function () {
+  console.log('get_speler_data')
+  handleData(`http://${lanIP}/api/v1/spelersinfo/9/`, chart_data);
+}
+
 // #endregion
 
 // #region ***  Event Listeners - listenTo___            ***********
-const listenToUI = function () {
-  console.log('listenToUI')
-};
+function listenToUI() {
+  console.log('listenToUI');
+}
 const listenStartbutton = function () {
   console.log('listenStartbutton')
   document.querySelector('.js-startbutton').addEventListener('click', function () {
@@ -170,22 +243,7 @@ const listenStartbutton = function () {
   })
 }
 // #endregion
-var options = {
-  chart: {
-    type: 'line'
-  },
-  series: [{
-    name: 'sales',
-    data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-  }],
-  xaxis: {
-    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-  }
-}
 
-var chart = new ApexCharts(document.querySelector('#js-chart'), options);
-
-chart.render()
 
 // #region ***  Init / DOMContentLoaded                  ***********
 

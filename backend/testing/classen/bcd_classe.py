@@ -69,7 +69,7 @@ class BCD:
                 if self.e == True:
                     self.flash_led_2(self.nummer_2)
                 sleep(0.001)
-                i2c.write_byte(0x24, 255)
+                # i2c.write_byte(0x24, 255)
                 sleep(0.001)
                 # i2c.write_byte(0x24, 0)
                 # waarde = i2c.read_byte(0x24)
