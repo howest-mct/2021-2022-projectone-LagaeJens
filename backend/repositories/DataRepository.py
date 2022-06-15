@@ -57,9 +57,20 @@ class DataRepository:
         params = [naam, kaartnummer, datum_gespeeld, time_played]
         return Database.execute_sql(sql, params)
     
-    @staticmethod
-    def update_speler(spelerid,time_played):
-        sql = "UPDATE speler SET time_played = %s WHERE spelerid = %s"
-        params = [time_played, spelerid]
-        return Database.execute_sql(sql, params)
+    # @staticmethod
+    # def update_speler(spelerid,time_played):
+    #     sql = "UPDATE speler SET time_played = %s WHERE spelerid = %s"
+    #     params = [time_played, spelerid]
+    #     return Database.execute_sql(sql, params)
     
+    @staticmethod
+    def update_tijden(spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid):
+        sql = "insert into tijd (spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid) values (%s,%s,%s,%s,%s,%s)"
+        params = [spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid]
+        return Database.execute_sql(sql, params)    
+    
+    @staticmethod
+    def get_tijden(spelerid):
+        sql = "select * from tijd where spelerid = %s"
+        params = [spelerid]
+        return Database.get_rows(sql,params)

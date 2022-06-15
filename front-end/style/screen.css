@@ -308,6 +308,13 @@ a:focus {
   }
 }
 
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+#js-chart {
+  max-width: 650px;
+  margin: 35px auto;
+}
+
 /*
     Objects: Layout
     ---
@@ -491,7 +498,10 @@ a:focus {
 /*------------------------------------*\
   #COMPONENTS
 \*------------------------------------*/
-
+#myChart {
+  width: 400px;
+  height: 400px;
+}
 /*
     Component: Logo
     ---
