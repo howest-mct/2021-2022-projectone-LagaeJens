@@ -89,31 +89,31 @@ def quiz_game():
                     if (waarde & 0x01) == 0 :
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 1'}, broadcast=True)
-                        DataRepository.insert_data(1, 1, 1, datetime.now(), waarde , 'Reedcontact 1')
+                        DataRepository.insert_data(1, 1, datetime.now(), waarde , 'Reedcontact 1')
                     if (waarde & 0x02) == 0:
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 2'}, broadcast=True)
-                        DataRepository.insert_data(2, 2, 2, datetime.now(), waarde , 'Reedcontact 2')
+                        DataRepository.insert_data(2, 2, datetime.now(), waarde , 'Reedcontact 2')
                     if (waarde & 0x04) == 0:
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 3'}, broadcast=True)
-                        DataRepository.insert_data(3, 3, 3, datetime.now(), waarde , 'Reedcontact 3')
+                        DataRepository.insert_data(3, 3, datetime.now(), waarde , 'Reedcontact 3')
                     if (waarde & 0x08) == 0:
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 4'}, broadcast=True)
-                        DataRepository.insert_data(4, 3, 3, datetime.now(), waarde , 'Reedcontact 4')
+                        DataRepository.insert_data(4, 3, datetime.now(), waarde , 'Reedcontact 4')
                     if (waarde & 16) == 0:
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 5'}, broadcast=True)
-                        DataRepository.insert_data(5, 3, 3, datetime.now(), waarde , 'Reedcontact 5')
+                        DataRepository.insert_data(5,3, datetime.now(), waarde , 'Reedcontact 5')
                     if (waarde & 32) == 0:
                         print(waarde)
                         socketio.emit('knop', {'knop': 'Reedcontact 6'}, broadcast=True)
-                        DataRepository.insert_data(6, 3, 3, datetime.now(), waarde , 'Reedcontact 6')
+                        DataRepository.insert_data(6,3, datetime.now(), waarde , 'Reedcontact 6')
                     if waarde == 64:
                         print('done')
                         socketio.emit('knop', {'knop': 'allemaal connected'}, broadcast=True)
-                        DataRepository.insert_data(1, 3, 3, datetime.now(), waarde , 'Puzzlespel is klaar')
+                        DataRepository.insert_data(1, 3, datetime.now(), waarde , 'Puzzlespel is klaar')
                         i2c.open(1)
                         i2c.write_byte(0x22, 0b10111111)
                         i2c.close()
@@ -187,10 +187,10 @@ def top_times():
         return jsonify(top_times=data)
     if request.method == 'POST':
         print('add speler')
-        print(request)
+        # print(request)
         gegevens = DataRepository.json_or_formdata(request)
         data = DataRepository.add_speler(gegevens['naam'],gegevens['kaartnummer'],datetime.now())
-        print(data)
+        # print(data)
         return jsonify(speler=data), 200
 
 
@@ -229,10 +229,16 @@ def start_thread_lees_knop():
         global id_rfid
         prev = 0
         waarde = 0
+        i2c.write_byte(0x26,0b11111110)
         neopixel.all_red()
         while True:
+            if GPIO.input(13) == 1:
+                socketio.emit('BCD B2F')
+                print('B2F')
+                time.sleep(1)
             if var_b == True:
                 if var_c == False:
+                    i2c.write_byte(0x26,0b11111110)
                     neopixel.all_red()
                     print('rfid actief')
                     lcd.send_instruction(0x01)
@@ -242,7 +248,7 @@ def start_thread_lees_knop():
                     waarde_id = id_rfid
                     # print(waarde_id)
                     if waarde_id != 0:
-                        DataRepository.insert_data(13, 1, 1, datetime.now(), waarde_id , 'RFID gescand')
+                        DataRepository.insert_data(13,  1, datetime.now(), waarde_id , 'RFID gescand')
                         var_c = True
                         var_j = True
                         var_g = False
@@ -255,9 +261,9 @@ def start_thread_lees_knop():
                         if var_c == True:
                             waarde_bcd = bcd.main_BCD()
                             if waarde_bcd == 1:
+                                socketio.emit('BCD B2F')
                                 spel_1 = datetime.now()
                                 var_d = True
-                                socketio.emit('BCD B2F')
                                 var_j = False
                                 print("bcd 1")
                 if var_d == True:
@@ -278,8 +284,8 @@ def start_thread_lees_knop():
                         print(waarde_dungeons,"testtt")
                         if waarde_dungeons == 1:
                             spel_3 = datetime.now()
-                            var_f = True
                             var_i = False
+                            var_f = True
                             print("is true")
                 if var_f == True:
                     # i2c.open(1)
@@ -327,7 +333,7 @@ def start_thread_lees_knop():
                         tijd_database = eindtijd - starttijd
                         DataRepository.update_tijden(spel_1_d, spel_2_d, spel_3_d , spel_4_d , tijd_database,9)
                         print(tijd_database)
-                        DataRepository.insert_data(10, 10, 10, datetime.now(), waarde , 'Eindknop')
+                        DataRepository.insert_data(10, 10, datetime.now(), waarde , 'Eindknop')
                     waarde = prev
                     # time.sleep(1000)
                 
@@ -381,14 +387,13 @@ def lees_mpu_thread_function():
     try:
         while True:
             try:
-                i2c.open(1)
-                waarde_i2c = i2c.read_byte(0x26)
-                i2c.close()
-                if (waarde_i2c & 0x02) == 0:
+                if var_f == True:
                     # print('test')
                     waarde = servo.mpu_data_to_front()
-                    DataRepository.insert_data(8, 8,8, datetime.now(), waarde , 'MPU data naar front')
-                time.sleep(1)
+                    DataRepository.insert_data(8, 8, datetime.now(), waarde , 'MPU data naar front')
+                    time.sleep(1)
+                else:
+                    time.sleep(1)
             except Exception as e:
                 print("mpu error:" , e)
     except Exception as e:
@@ -411,7 +416,7 @@ def lees_buttons():
                     socketio.emit('Buttons', {'Button': waarde}, broadcast=True)
                     if waarde != 223:
                         print("ke buttons geschreven")
-                        DataRepository.insert_data(9, 9, 9, datetime.now(), waarde , 'Buttons')
+                        DataRepository.insert_data(9, 9, datetime.now(), waarde , 'Buttons')
                     time.sleep(0.5)
                 else:
                     time.sleep(1)
@@ -444,7 +449,7 @@ def lees_bcd_thread():
 
                 if waarde != vorige_waarde_bcd:
                     print("ke geschreven")
-                    DataRepository.insert_data(9, 9, 9, datetime.now(), waarde , 'BCD waarde')
+                    DataRepository.insert_data(9, 9, datetime.now(), waarde , 'BCD waarde')
                     time.sleep(0.5)
                 else:
                     time.sleep(0.5)

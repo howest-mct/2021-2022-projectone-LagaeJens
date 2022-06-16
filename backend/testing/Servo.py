@@ -51,6 +51,9 @@ class Servo_Met_MPU():
     
     def main_servo_met_mpu(self):
         try:
+            self.i2c.open(1)
+            self.i2c.write_byte(0x26,0b11111110)
+            self.i2c.close()
             self.setup()
             self.mpu.setup(0x68)
             pwm_servo = GPIO.PWM(self.servo , 50)
@@ -113,6 +116,9 @@ class Servo_Met_MPU():
                 
                 if self.var_a == True:
                     if self.var_b == True:
+                        self.i2c.open(1)
+                        self.i2c.write_byte(0x26,0b11111101)
+                        self.i2c.close()
                         return 1
 
 

@@ -3,6 +3,7 @@ const socket = io(`http://${lanIP}`);
 
 let htmlsensor
 let myChart
+let converted_data
 
 const waardeNaarFrontend = function (data) {
   let htmlstring = ''
@@ -41,10 +42,15 @@ const listenToSocket = function () {
     waardeNaarFrontend(data)
   });
 
-  socket.on('BCD B2F'), function (data) {
-    console.log(data)
+  socket.on('BCD B2F'), function () {
+    console.log("doorsturen BCD B2F")
+    try {
+      window.location.href = "vragen.html"
+
+    } catch (error) {
+      console.error(error);
+    }
     // go to vragen.html
-    window.location.href = "vragen.html"
   }
 };
 
@@ -61,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
     listenStartbutton();
     get_top_tijden()
     listenToStartbutton2();
+    test();
   }
   if (htmlhistoriek) {
     get_Data_historiek();
@@ -90,7 +97,6 @@ const show_data_historiek = function (data) {
       html += `<tr>
                         <td>${h.volgnummer}</td>
                         <td>${h.deviceid}</td>
-                        <td>${h.spelerid}</td>
                         <td>${h.actiedatum}</td>
                         <td>${h.waarde}</td>
                         <td>${h.commentaar}</td>
@@ -156,11 +162,11 @@ const show_vragen = function (data) {
 }
 
 const show_top_tijden = function (data) {
-  console.log(data)
+  // console.log(data)
   try {
     let html = ''
     for (let t of data.top_times) {
-      console.log(t)
+      // console.log(t)
       html += `<tr>
                         <td>${t.spel_1}</td>
                         <td>${t.spel_2}</td>
@@ -177,13 +183,11 @@ const show_top_tijden = function (data) {
 }
 
 const chart_data = function (data) {
-  console.log(data)
+  // console.log(data)
   try {
-    let converted_data = [data.geschied_speler.spel_1, data.geschied_speler.spel_2, data.geschied_speler.spel_3, data.geschied_speler.spel_4]
+    converted_data = [data.geschied_speler.spel_1, data.geschied_speler.spel_2, data.geschied_speler.spel_3, data.geschied_speler.spel_4]
     console.log(converted_data);
-    myChart.data.datasets.forEach((dataset) => {
-      dataset.data.push(converted_data)
-    });
+    dataset.data.push(converted_data)
     myChart.update();
   }
   catch (error) {
@@ -191,32 +195,49 @@ const chart_data = function (data) {
   }
 }
 
-
-
-
-const chart = function () {
-  let stars = [135850, 52122];
-  let frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
-  let ctx = document.getElementById('myChart');
-  myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: frameworks,
-      datasets: [{
-        label: 'Spel 1',
-        data: stars,
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)"
-        ]
-      }]
+const test = function (data) {
+  let options = {
+    chart: {
+      type: 'bar'
     },
-  });
+    series: [{
+      name: 'sales',
+      data: data.converted_data
+    }],
+    xaxis: {
+      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+    }
+  }
 
+  let chart = new ApexCharts(document.querySelector("#chart"), options);
+
+  chart.render();
 }
+
+
+// const chart = function () {
+//   let stars = [135850, 52122];
+//   let frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
+//   let ctx = document.getElementById('myChart');
+//   myChart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//       labels: frameworks,
+//       datasets: [{
+//         label: 'Spel 1',
+//         data: stars,
+//         backgroundColor: [
+//           "rgba(255, 99, 132, 0.2)",
+//           "rgba(54, 162, 235, 0.2)",
+//           "rgba(255, 206, 86, 0.2)",
+//           "rgba(75, 192, 192, 0.2)",
+//           "rgba(153, 102, 255, 0.2)"
+//         ]
+//       }]
+//     },
+//   });
+
+// }
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
@@ -241,10 +262,18 @@ const get_top_tijden = function () {
   handleData(`http://${lanIP}/api/v1/spelerinlog/`, show_top_tijden);
 }
 
+const get_top_tijden2 = function () {
+  console.log('get_top_tijden')
+  handleData(`http://${lanIP}/api/v1/spelerinlog/`, test);
+}
+
 const get_speler_data = function () {
   console.log('get_speler_data')
   handleData(`http://${lanIP}/api/v1/spelersinfo/9/`, chart_data);
 }
+
+
+
 
 // #endregion
 

@@ -314,7 +314,10 @@ a:focus {
   max-width: 650px;
   margin: 35px auto;
 }
-
+.chart {
+  max-width: 650px;
+  margin: 35px auto;
+}
 /*
     Objects: Layout
     ---

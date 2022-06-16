@@ -1,23 +1,25 @@
-const chart = function () {
-    var stars = [135850, 52122, 148825, 16939, 9763];
-    var frameworks = ['React', 'Angular', 'Vue', 'Hyperapp', 'Omi'];
-    var ctx = document.getElementById('myChart');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: frameworks,
-            datasets: [{
-                label: 'Popular JavaScript Frameworks',
-                data: stars
-            }]
+
+const test = function () {
+    let options = {
+        chart: {
+            type: 'bar'
         },
-    });
+        series: [{
+            name: 'sales',
+            data: [30, 40, 45, 50, 49, 60, 70, 91, 125]
+        }],
+        xaxis: {
+            categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
+        }
+    }
+
+    let chart = new ApexCharts(document.querySelector("#chart"), options);
+
+    chart.render();
 }
 
-
 const init = function () {
-    console.log('init')
-    chart();
+    test();
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -35,15 +35,15 @@ class DataRepository:
 
 
     @staticmethod
-    def insert_data(deviceid,actieid ,spelerid, actiedatum , waarde, commentaar ):
-        sql = "INSERT INTO Historiek (deviceid , actieid , spelerid, actiedatum , waarde , commentaar ) VALUES  (%s, %s, %s, %s, %s, %s)" 
-        params= [deviceid,actieid ,spelerid, actiedatum , waarde, commentaar]
+    def insert_data(deviceid,actieid , actiedatum , waarde, commentaar ):
+        sql = "INSERT INTO Historiek (deviceid , actieid , actiedatum , waarde , commentaar ) VALUES  (%s, %s, %s, %s, %s)" 
+        params= [deviceid,actieid ,actiedatum , waarde, commentaar]
         return Database.execute_sql(sql, params)
     
     
     @staticmethod
     def historiek_data_ophalen():
-        sql = "SELECT volgnummer , deviceid, spelerid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc limit 50"
+        sql = "SELECT volgnummer , deviceid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc limit 50"
         return Database.get_rows(sql)
     
     @staticmethod
