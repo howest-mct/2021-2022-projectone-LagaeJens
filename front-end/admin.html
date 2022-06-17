@@ -9,23 +9,23 @@
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"
         integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="script/handledata.js"></script>
     <script src="script/app.js"></script>
     <link rel="stylesheet" href="style/normalize.css" />
     <link rel="stylesheet" href="style/screen.css" />
 </head>
 
-<body class="js-historiek">
+<body class="js-admin">
     <header class="o-row o-row--md o-row--header">
         <div class="o-container">
             <div class="c-header">
                 <div class="c-header__logo">
                     <h1 class="c-logo">
                         <svg class="c-logo__symbol" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="191.711px"
-                            height="191.711px" viewBox="0 0 191.711 191.711"
-                            style="enable-background:new 0 0 191.711 191.711;" xml:space="preserve">
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="60px" height="60px"
+                            viewBox="0 0 191.711 191.711" style="enable-background:new 0 0 191.711 191.711;"
+                            xml:space="preserve">
                             <g>
                                 <path
                                     d="M183.437,44.144c0.515-13.523-0.111-27.46-2.455-40.805c-0.324-1.852-2.521-3.477-4.373-3.33
@@ -111,7 +111,7 @@
                 <div class="c-header__nav">
                     <nav class="c-nav c-nav--meta">
                         <h4 class="c-header__cta">
-                            <a href="admin.html" class="c-link-cta">Admin</a>
+                            <a href="#!" class="c-link-cta">Admin</a>
                         </h4>
                     </nav>
                 </div>
@@ -126,42 +126,37 @@
         </div>
     </header>
     <section>
-        <div class="o-layout o-layout--justify-center">
-
-        </div>
-    </section>
-    <section>
         <div class="o-container">
-            <div class="o-layout_tabel o-layout--justify-center">
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>deviceid</th>
-                            <th>volgnummer</th>
-                            <th>actiedatum</th>
-                            <th>Waarde</th>
-                            <th>commentaar</th>
-                        </tr>
-                    </thead>
-                    <tbody class="js-tabel">
-                    </tbody>
-                </table>
+            <div class="o-layout o-layout--justify-center o-layout--gutter-xl">
+                <div class="card o-layout__item u-1-of-2">
+                    <p> Test de range waarop de servo's kunnen draaien</p>
+                </div>
+                <div class="o-layout__item u-1-of-2">
+                    <p class="c-header__cta_main">
+                    <div class="js-servo">
+                        <a class="c-link-cta_main">Servo's range</a>
+                    </div>
+                    </p>
+                </div>
+
             </div>
         </div>
-    </section>
-    <section>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholder">dummy</p>
+        <div class="o-container">
+            <div class="o-layout o-layout--justify-center o-layout--gutter-xl">
+                <!-- <div class="o-layout--row-reverse"> -->
+                <div class="card o-layout__item u-1-of-2">
+                    <p> Schakel de pi uit via de website</p>
+                </div>
+                <div class="o-layout__item u-1-of-2">
+                    <p class="c-header__cta_main">
+                    <div class="js-poweroff">
+                        <a class="c-link-cta_main">poweroff</a>
+                    </div>
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholderr">dummy</p>
-        </div>
-        <div class="o-layout o-layout--justify-center">
-            <p class="js-placeholdeer">dummy</p>
-        </div>
-    </section>
-    <section>
-        <div id="js-chart"></div>
+        <!-- </div> -->
     </section>
 </body>
 

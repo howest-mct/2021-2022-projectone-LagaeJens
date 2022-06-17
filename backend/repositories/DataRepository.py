@@ -71,7 +71,7 @@ class DataRepository:
     
     @staticmethod
     def get_tijden(spelerid):
-        sql = "SELECT * FROM tijd WHERE spelerid = %s"
+        sql = "SELECT spel_1, spel_2,spel_3,spel_4,totale_tijd FROM tijd WHERE spelerid = %s"
         params = [spelerid]
         return Database.get_one_row(sql,params)
     

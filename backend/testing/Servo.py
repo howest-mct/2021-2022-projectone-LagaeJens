@@ -27,8 +27,28 @@ class Servo_Met_MPU():
         GPIO.setup(self.keuze_2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
-    
-
+    def test_range(self):
+        self.setup()
+        pwm_servo = GPIO.PWM(self.servo , 50)
+        pwm_servo2 = GPIO.PWM(self.servo2 , 50)  
+        pwm_servo.start(0)
+        pwm_servo2.start(0)
+        pwm_servo.ChangeDutyCycle(0.5)
+        sleep(0.2)
+        pwm_servo2.ChangeDutyCycle(0.5)
+        sleep(0.2)
+        pwm_servo.ChangeDutyCycle(12.5)
+        sleep(0.2)
+        pwm_servo2.ChangeDutyCycle(12.5)
+        sleep(0.2)
+        pwm_servo.ChangeDutyCycle(5)
+        sleep(0.2)
+        pwm_servo2.ChangeDutyCycle(5)
+        sleep(0.2)
+        pwm_servo2.ChangeDutyCycle(0)
+        sleep(0.2)
+        pwm_servo2.ChangeDutyCycle(0)
+        sleep(0.2)
     # waarde = spi.read_channel(0)
 
     # 100%/20 = 50hz
@@ -52,7 +72,7 @@ class Servo_Met_MPU():
     def main_servo_met_mpu(self):
         try:
             self.i2c.open(1)
-            self.i2c.write_byte(0x26,0b11111110)
+            self.i2c.write_byte(0x26,0b11111101)
             self.i2c.close()
             self.setup()
             self.mpu.setup(0x68)
@@ -64,10 +84,10 @@ class Servo_Met_MPU():
             sleep(0.1)
             pwm_servo2.ChangeDutyCycle(5)
             sleep(0.1)
-            # pwm_servo.ChangeDutyCycle(0)
-            # sleep(0.02)
-            # pwm_servo2.ChangeDutyCycle(0)
-            # sleep(0.02)
+            pwm_servo.ChangeDutyCycle(0)
+            sleep(0.02)
+            pwm_servo2.ChangeDutyCycle(0)
+            sleep(0.02)
             self.var_a = False
             self.var_b = False
             while True:
@@ -117,10 +137,13 @@ class Servo_Met_MPU():
                 if self.var_a == True:
                     if self.var_b == True:
                         self.i2c.open(1)
-                        self.i2c.write_byte(0x26,0b11111101)
+                        self.i2c.write_byte(0x26,0b11111110)
                         self.i2c.close()
                         return 1
-
+                
+                
+                
+                sleep(0.01)
 
 
 

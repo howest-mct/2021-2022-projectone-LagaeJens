@@ -51,6 +51,7 @@ var_h = False
 var_i = False
 var_j = False
 id_rfid = 0
+spelerid =  ''
 
 def setup_gpio():
     GPIO.setwarnings(False)
@@ -171,15 +172,16 @@ def vragen():
         data = DataRepository.ophalen_vragen()
         return jsonify(vragen=data)
     
-@app.route('/api/v1/spelersinfo/<speler_id>/' , methods=['GET'])
-def historiek_speler(speler_id):
+@app.route('/api/v1/spelersinfo/<spelerid>/' , methods=['GET'])
+def historiek_speler(spelerid):
     if request.method == 'GET':
         print('Historiek speler')
-        data = DataRepository.get_tijden(speler_id)
+        data = DataRepository.get_tijden(spelerid)
         return jsonify(geschied_speler=data)
 
 @app.route('/api/v1/spelerinlog/' , methods=['GET','POST'])
 def top_times():
+    global spelerid
     if request.method == 'GET':
         print('Top times')
         data = DataRepository.get_top_times()
@@ -190,10 +192,13 @@ def top_times():
         # print(request)
         gegevens = DataRepository.json_or_formdata(request)
         data = DataRepository.add_speler(gegevens['naam'],gegevens['kaartnummer'],datetime.now())
-        # print(data)
+        spelerid = data
+        socketio.emit('b2f_id', {'id': data} )
         return jsonify(speler=data), 200
 
-
+@socketio.on('f_2_b_servo')
+def f_2_b_servo():
+    servo.test_range()
 
 @socketio.on('f_2_b_knop')
 def f_2_b_knop():
@@ -207,12 +212,37 @@ def f_2_b_knop():
     bcd.setup()
     print('f_2_b_knop')
     
+@socketio.on('f_2_b_poweroff')
+def f_2_b_poweroff():
+    print("Shutting down")
+    lcd.send_instruction(0x01)
+    lcd.write_message("Pi switched off")
+    time.sleep(5)
+    os.system("sudo shutdown -h now")
+    
 
+    data = DataRepository.get_tijden(spelerid)
+    print(data)
 # START een thread op. Belangrijk!!! Debugging moet UIT staan op start van de server, anders start de thread dubbel op
 # werk enkel met de packages gevent en gevent-websocket.
 
-
-
+# convert mysql data to list
+def convert_to_list():
+    global spelerid
+    data = DataRepository.get_tijden(9)
+    print(data)
+    list = []
+    # print(data)
+    spel1 = data['spel_1']
+    spel2 = data['spel_2']
+    spel3 = data['spel_3']
+    spel4 = data['spel_4']
+    totale_tijd = data['totale_tijd']
+    nieuwe_lijst = [spel1, spel2, spel3, spel4, totale_tijd]    
+    list.append(nieuwe_lijst)
+    print(list)
+    socketio.emit('b2f_tijden', {'tijden': list} )
+    time.sleep(100)
 def start_thread_lees_knop():
     try:
         global starttijd
@@ -227,18 +257,20 @@ def start_thread_lees_knop():
         global var_i
         global var_j
         global id_rfid
+        global spelerid
         prev = 0
         waarde = 0
-        i2c.write_byte(0x26,0b11111110)
         neopixel.all_red()
         while True:
             if GPIO.input(13) == 1:
-                socketio.emit('BCD B2F')
-                print('B2F')
-                time.sleep(1)
+                convert_to_list()
             if var_b == True:
                 if var_c == False:
-                    i2c.write_byte(0x26,0b11111110)
+                    i2c.write_byte(0x20,0b11101111)
+                    time.sleep(0.01)
+                    i2c.write_byte(0x26,0b11111101)
+                    time.sleep(0.01)
+                    i2c.write_byte(0x22, 0b10111111)
                     neopixel.all_red()
                     print('rfid actief')
                     lcd.send_instruction(0x01)
@@ -261,7 +293,7 @@ def start_thread_lees_knop():
                         if var_c == True:
                             waarde_bcd = bcd.main_BCD()
                             if waarde_bcd == 1:
-                                socketio.emit('BCD B2F')
+                                socketio.emit('BCD_B2F', {'BCD B2F': 'B2F'}, broadcast=True)
                                 spel_1 = datetime.now()
                                 var_d = True
                                 var_j = False
@@ -321,7 +353,7 @@ def start_thread_lees_knop():
                     print("button pressed")
                     neopixel.rainbow_cycle()
                     if waarde != prev:    
-                        print("ke geschreven")
+                        print("spelerinfo geschreven in database")
                         var_b = False
                         var_g = False
                         id_rfid = 0
@@ -331,10 +363,10 @@ def start_thread_lees_knop():
                         spel_3_d = spel_3 - spel_2 
                         spel_4_d = eindtijd - spel_4
                         tijd_database = eindtijd - starttijd
-                        DataRepository.update_tijden(spel_1_d, spel_2_d, spel_3_d , spel_4_d , tijd_database,9)
+                        DataRepository.update_tijden(spel_1_d, spel_2_d, spel_3_d , spel_4_d , tijd_database,spelerid)
                         print(tijd_database)
                         DataRepository.insert_data(10, 10, datetime.now(), waarde , 'Eindknop')
-                    waarde = prev
+                waarde = prev
                     # time.sleep(1000)
                 
             
@@ -344,6 +376,7 @@ def start_thread_lees_knop():
 
 def lcd_ip():
     try:
+        time.sleep(15)
         lcd.setup_lcd()
         #function set
         lcd.send_instruction(0x38)
