@@ -45,15 +45,32 @@ The magnetic sensors are mainly used in the quiz game to check whether the corre
 
 I read the BCD via the PCF8574N to know which number the user has dialed in the number game.
 
-###MPU6050
+### MPU6050
 
 The MPU6050 is used to control the servos. When you turn the MPU, the servos turn with it.
 
-
-- Wat is de structuur van het project?
-- Wat moet er gebeuren met de database? Hoe krijgt de persoon dit up and running?
-
 #Features on site
-  
+
+- Random questions for the question game
+- History of players 
+- Sensor history
+- button to shutdown Pi
+- button to test servo's range
+
+## Technologies
+These are all used programming languages and libraries.
+- [Python](https://www.python.org/)
+- [HTML](https://html.com/)
+- [Javascript](https://www.javascript.com/)
+- [Flask](https://flask.palletsprojects.com/en/2.1.x/)
+- [Socketio](https://python-socketio.readthedocs.io/en/latest/)
+
+
+##Getting things started
+
+To configure the Pi please check out the detailed guide on my [instructables](https://www.instructables.com/PuzzlBox/) page
+
 ## Instructables
+
+
 Plaats zeker een link naar de Instructables zodat het project kan nagebouwd worden!
