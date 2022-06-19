@@ -11,12 +11,13 @@ class rfid_lezen:
 
         def uitlezen():
                 try:
-                        while True:
-                                reader = SimpleMFRC522()
-                                id = reader.read()
-                                print(id[0])
-                                sleep(0.005)
-                                return id[0]
+                        reader = SimpleMFRC522()
+                        id = reader.read()
+                        print(id[0])
+                        sleep(0.01)
+                        return id[0]
+                
+                                
 
 
                 except KeyboardInterrupt as e:

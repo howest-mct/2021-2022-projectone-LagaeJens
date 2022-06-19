@@ -35,18 +35,60 @@ class DataRepository:
 
 
     @staticmethod
-    def insert_data(deviceid,actieid ,spelerid, actiedatum , waarde, commentaar ):
-        sql = "INSERT INTO Historiek (deviceid , actieid , spelerid, actiedatum , waarde , commentaar ) VALUES  (%s, %s, %s, %s, %s, %s)" 
-        params= [deviceid,actieid ,spelerid, actiedatum , waarde, commentaar]
+    def insert_data(deviceid,actieid , actiedatum , waarde, commentaar ):
+        sql = "INSERT INTO Historiek (deviceid , actieid , actiedatum , waarde , commentaar ) VALUES  (%s, %s, %s, %s, %s)" 
+        params= [deviceid,actieid ,actiedatum , waarde, commentaar]
         return Database.execute_sql(sql, params)
     
     
     @staticmethod
     def historiek_data_ophalen():
-        sql = "SELECT volgnummer , deviceid, spelerid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc limit 100"
+        sql = "SELECT volgnummer , deviceid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc"
         return Database.get_rows(sql)
     
     @staticmethod
     def ophalen_vragen():
         sql = "SELECT * from vraag order by RAND() limit 6"
+        return Database.get_rows(sql)
+    
+    @staticmethod
+    def add_speler(naam,kaartnummer,datum_gespeeld,time_played):
+        sql = "INSERT INTO speler (naam , kaartnummer, datum_gespeeld, time_played ) VALUES (%s,%s,%s,%s)"
+        params = [naam, kaartnummer, datum_gespeeld, time_played]
+        return Database.execute_sql(sql, params)
+    
+    # @staticmethod
+    # def update_speler(spelerid,time_played):
+    #     sql = "UPDATE speler SET time_played = %s WHERE spelerid = %s"
+    #     params = [time_played, spelerid]
+    #     return Database.execute_sql(sql, params)
+    
+    @staticmethod
+    def update_tijden(spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid):
+        sql = "insert into tijd (spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid) values (%s,%s,%s,%s,%s,%s)"
+        params = [spel_1,spel_2,spel_3,spel_4,totale_tijd,spelerid]
+        return Database.execute_sql(sql, params)    
+    
+    @staticmethod
+    def get_tijden(spelerid):
+        sql = "SELECT spel_1, spel_2,spel_3,spel_4,totale_tijd FROM tijd WHERE spelerid = %s"
+        params = [spelerid]
+        return Database.get_one_row(sql,params)
+    
+    
+    @staticmethod 
+    def get_top_times():
+        sql = "select s.naam, t.spel_1 ,t.spel_2,t.spel_3,t.spel_4,t.totale_tijd from tijd as t join speler as s on s.spelerID = t.spelerid order by t.totale_tijd limit 3"
+        return Database.get_rows(sql)
+    
+    @staticmethod
+    def add_speler(naam,kaartnummer,datum_gespeeld):
+        sql = "INSERT INTO speler (naam , kaartnummer, datum_gespeeld) VALUES (%s,%s,%s)"
+        params = [naam, kaartnummer, datum_gespeeld]
+        return Database.execute_sql(sql, params)
+    
+    
+    @staticmethod
+    def get_list_spelen():
+        sql = "select s.naam, t.spel_1 ,t.spel_2,t.spel_3,t.spel_4,t.totale_tijd from tijd as t join speler as s on s.spelerID = t.spelerid order by s.spelerid desc"
         return Database.get_rows(sql)

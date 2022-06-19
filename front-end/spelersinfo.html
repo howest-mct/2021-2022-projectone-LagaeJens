@@ -2,20 +2,22 @@
 <html lang="en">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Puzzledoos</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"
 		integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU"
 		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
 	<script src="script/handledata.js"></script>
 	<script src="script/app.js"></script>
 	<link rel="stylesheet" href="style/normalize.css" />
 	<link rel="stylesheet" href="style/screen.css" />
+	<title>spelerinfo</title>
 </head>
 
-<body class="js-vragen">
+<body class="js-spelerinfo">
+
 	<header class="o-row o-row--md o-row--header">
 		<div class="o-container">
 			<div class="c-header">
@@ -97,11 +99,21 @@
 						</svg>
 					</h1>
 				</div>
+				<div class="c-header__nav c-header__nav--main">
+					<nav class="c-nav">
+						<ul class="o-list c-nav__list">
+							<li class="c-nav__item"><a href="index.html" class="c-nav__link">Home</a></li>
+							<li class="c-nav__item"><a href="spel_starten.html" class="c-nav__link">Spel starten</a>
+							</li>
+							<li class="c-nav__item"><a href="historiek.html" class="c-nav__link">Historiek</a></li>
+						</ul>
+					</nav>
+				</div>
 				<div class="c-header__nav">
 					<nav class="c-nav c-nav--meta">
 						<h4 class="c-header__cta">
 							<a href="admin.html" class="c-link-cta">Admin</a>
-							</>
+						</h4>
 					</nav>
 				</div>
 				<div class="c-header__mobile-nav-trigger">
@@ -115,16 +127,21 @@
 		</div>
 	</header>
 	<section>
-		<div class="o-container js-vraag">
-
-			<div class="o-layout o-layout--justify-center o-layout--gutter-xl">
-				<div class="card o-layout__item u-1-of-2">
-					<p>vraag 1</p>
-				</div>
-				<div class="card o-layout__item u-1-of-2">
-					<p>antwoord</p>
-				</div>
-
+		<div class="o-container">
+			<div class="o-layout_tabel o-layout--justify-center">
+				<table class="styled-table">
+					<thead>
+						<tr>
+							<th>segment 1</th>
+							<th>segment 2</th>
+							<th>segment 3 </th>
+							<th>segment 4</th>
+							<th>totale tijd</th>
+						</tr>
+					</thead>
+					<tbody class="js-spelerinfotabel">
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</section>
@@ -237,6 +254,7 @@
 			</div>
 		</div>
 	</aside>
+
 </body>
 
 </html>

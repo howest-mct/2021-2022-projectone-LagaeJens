@@ -50,10 +50,14 @@ class BCD:
         self.nummer_2 = self.random_nummer_genereren() 
         if self.nummer_1 == self.nummer_2:
             self.nummer_2 = self.random_nummer_genereren()
+            if self.nummer_1 == self.nummer_2:
+                self.nummer_2 = self.random_nummer_genereren()
         self.f = False
         self.e = False
         print(self.nummer_1)
         print(self.nummer_2)
+        self.i2c.write_byte(0x24, 0b01111111)
+    
     
     def main_BCD(self):	
         try:
@@ -69,7 +73,7 @@ class BCD:
                 if self.e == True:
                     self.flash_led_2(self.nummer_2)
                 sleep(0.001)
-                i2c.write_byte(0x24, 255)
+                i2c.write_byte(0x24, 0b10111111)
                 sleep(0.001)
                 # i2c.write_byte(0x24, 0)
                 # waarde = i2c.read_byte(0x24)
