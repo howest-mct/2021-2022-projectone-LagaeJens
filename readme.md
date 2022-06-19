@@ -75,6 +75,8 @@ The circuit with schematics can be found on the [instructables](https://www.inst
 
 ## Instructables
 
+If you would like to remake the project for yourself you can find a detailed guide on [instructables](https://www.instructables.com/PuzzlBox/)
 
-
-Plaats zeker een link naar de Instructables zodat het project kan nagebouwd worden!
+## Contact 
+Lagae Jens - [jens.lagae@student.howest.be](mailto:jens.lagae@student.howest.be)
+Source code: https://github.com/howest-mct/2021-2022-projectone-LagaeJens
