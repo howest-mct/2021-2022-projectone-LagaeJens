@@ -68,9 +68,13 @@ These are all used programming languages and libraries.
 
 ##Getting things started
 
-To configure the Pi please check out the detailed guide on my [instructables](https://www.instructables.com/PuzzlBox/) page
+To configure the Pi please check out the detailed guide on my [instructables](https://www.instructables.com/PuzzlBox/) page.
+
+## The circuits 
+The circuit with schematics can be found on the [instructables](https://www.instructables.com/PuzzlBox/) page.
 
 ## Instructables
+
 
 
 Plaats zeker een link naar de Instructables zodat het project kan nagebouwd worden!
