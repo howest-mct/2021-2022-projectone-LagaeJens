@@ -1,9 +1,5 @@
 # Project One - Puzzlbox
 
-
-Omschrijf het project. Doe dit in het markdown formaat.
-- [Syntax md](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
-
 # Table of contents
 - [About Puzzlbox]
 - [Voorbeeld 2](https://github.com/tsungtwu/flask-example/blob/master/README.md)
