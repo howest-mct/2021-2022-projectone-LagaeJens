@@ -168,10 +168,11 @@ figcaption {
 }
 
 footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   height: 100px;
+  display: block;
 }
 footer {
   background: #68b4f8;
@@ -698,6 +699,9 @@ a:focus {
 
   .c-nav__link {
     padding: 8px 20px;
+  }
+  .c-nav-trigger {
+    display: none;
   }
 }
 
@@ -1315,6 +1319,10 @@ a:focus {
   h3 {
     page-break-after: avoid;
   }
+}
+.table-wrapper {
+  overflow-x: auto; /*allows the div to scroll horizontally only when the div overflows.*/
+  overflow-y: hidden; /* does not allow for the div to scroll vertically */
 }
 .styled-table {
   border-collapse: collapse;

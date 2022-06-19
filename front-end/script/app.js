@@ -173,7 +173,7 @@ const show_vragen = function (data) {
     for (let v of data.vragen) {
       // console.log(v)
       html += `<div class="o-container js-vraag">     
-             <div class="o-layout o-layout--justify-center o-layout--gutter-xl">
+             <div class="o-layout o-layout--justify-center">
                 <div class="card o-layout__item u-1-of-3">
                     <p>vraag ${vraagcounter}: ${v.vraag}</p>
                 </div>
