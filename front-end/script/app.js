@@ -51,6 +51,7 @@ const listenToSocket = function () {
 
   socket.on('b2f_id', function (data) {
     id_speler = data.id
+    localStorage.setItem('id_speler', id_speler);
     console.log("test", id_speler)
   })
 
@@ -59,7 +60,10 @@ const listenToSocket = function () {
     data_player = data
     spelerchart = data
   })
-
+  socket.on('b2f_einde', function () {
+    console.log("einde")
+    window.location.href = "spelersinfo.html"
+  })
 };
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -69,10 +73,13 @@ document.addEventListener("DOMContentLoaded", function () {
   htmlvragen = document.querySelector('.js-vragen');
   htmlspelerinfo = document.querySelector('.js-spelerinfo');
   htmladmin = document.querySelector('.js-admin');
+  htmlsensorinfo = document.querySelector('.js-sensorinfo');
+
+
   // get_speler_data()
   listenToUI();
   listenToSocket();
-
+  toggleNav()
   if (htmlspel) {
     listenStartbutton();
     get_top_tijden()
@@ -80,17 +87,23 @@ document.addEventListener("DOMContentLoaded", function () {
     test();
   }
   if (htmlhistoriek) {
-    get_Data_historiek();
-    waardeNaarFrontendBCD()
-    waardeNaarFrontend()
-
+    get_history_spelers()
   }
   if (htmlvragen) {
     Get_vragen();
   }
+  if (htmlsensorinfo) {
+    get_Data_historiek();
+    waardeNaarFrontendBCD()
+    waardeNaarFrontend()
+  }
+
+
   if (htmlspelerinfo) {
-    chart()
-    show_speler_data()
+    // show_speler_data()
+    const id_spelr = localStorage.getItem('id_speler')
+    console.log(id_spelr, "lolololo")
+    get_speler_data(id_spelr)
 
   }
   if (htmladmin) {
@@ -141,6 +154,7 @@ const shuffle = function (array) {
 
 const show_vragen = function (data) {
   console.log(data)
+  console.log(id_speler)
   try {
     vraagcounter = 1
     let coounter = 0
@@ -178,12 +192,12 @@ const show_vragen = function (data) {
 }
 
 const show_top_tijden = function (data) {
-  // console.log(data)
   try {
     let html = ''
     for (let t of data.top_times) {
       // console.log(t)
       html += `<tr>
+                        <td>${t.naam}</td>
                         <td>${t.spel_1}</td>
                         <td>${t.spel_2}</td>
                         <td>${t.spel_3}</td>
@@ -195,8 +209,63 @@ const show_top_tijden = function (data) {
   } catch (error) {
     console.error(error);
   }
+}
+
+const show_spelers_tijden = function (data) {
+  console.log(data)
+  try {
+    let html = ''
+    for (let t of data.historiek) {
+      console.log(t)
+      html += `<tr>
+                        <td>${t.naam}</td>
+                        <td>${t.spel_1}</td>
+                        <td>${t.spel_2}</td>
+                        <td>${t.spel_3}</td>
+                        <td>${t.spel_4}</td>
+                        <td>${t.totale_tijd}</td>
+                    </tr>`
+    }
+    document.querySelector('.js-tijden_spelers').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
+const show_speler_data = function (data) {
+  console.log(data)
+  console.log(id_speler)
+  try {
+    let html = ''
+    {
+      // console.log(i)
+      html = `<tr>
+                        <td>${data.geschied_speler.spel_1}</td>
+                        <td>${data.geschied_speler.spel_2}</td>
+                        <td>${data.geschied_speler.spel_3}</td>
+                        <td>${data.geschied_speler.spel_4}</td>
+                        <td>${data.geschied_speler.totale_tijd}</td>
+                    </tr>`
+    }
+    document.querySelector('.js-spelerinfotabel').innerHTML = html;
+  } catch (error) {
+    console.error(error);
+  }
 
 }
+
+
+const toggleNav = function () {
+  let toggleTrigger = document.querySelectorAll('.js-toggle-nav');
+  for (let i = 0; i < toggleTrigger.length; i++) {
+    toggleTrigger[i].addEventListener('click', function () {
+      document.querySelector('body').classList.toggle('has-mobile-nav');
+    });
+  }
+}
+
 
 // const chart_data = function (data) {
 //   // console.log(data)
@@ -210,95 +279,7 @@ const show_top_tijden = function (data) {
 //     console.error(error);
 //   }
 // }
-let data_chart = []
-let spelerchart
 
-const show_speler_data = function () {
-  const labels = ['Spel 1', 'Spel 2', 'Spel 3', 'Spel 4']
-  const data = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Speler',
-        data: data_chart,
-        backgroundColor: "#3755ff",
-        bordercolor: "#375560",
-      }
-    ]
-  }
-  const config = {
-    type: 'line',
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Geschiedenis',
-        }
-      }
-    }
-  }
-  const ctx = document.querySelector('.js-chart')
-  spelerchart = new Chart(ctx, config)
-}
-const updatespelerData = function (data) {
-  for (const log of data) {
-    if (log['Waarde'] > 0) {
-      data_chart.push(log['Waarde']);
-      WeightLabels.push(log['day']);
-    }
-  }
-  // console.log(weightData);
-  weightChart.update();
-};
-
-
-const test = function (data) {
-  let options = {
-    chart: {
-      type: 'bar'
-    },
-    series: [{
-      name: 'playerdata',
-      data: data_player
-    }],
-    xaxis: {
-      categories: ['spel 1', 'spel 2', 'spel 3', 'spel 4']
-    }
-  }
-
-  let chart = new ApexCharts(document.querySelector("#chart"), options);
-
-  chart.render();
-}
-
-
-// const chart = function () {
-//   let stars = [135850, 52122];
-//   let frameworks = ['Spel 1 ', 'Spel 2', 'Spel 3', 'Spel 4'];
-//   let ctx = document.getElementById('myChart');
-//   myChart = new Chart(ctx, {
-//     type: 'bar',
-//     data: {
-//       labels: frameworks,
-//       datasets: [{
-//         label: 'Spel 1',
-//         data: stars,
-//         backgroundColor: [
-//           "rgba(255, 99, 132, 0.2)",
-//           "rgba(54, 162, 235, 0.2)",
-//           "rgba(255, 206, 86, 0.2)",
-//           "rgba(75, 192, 192, 0.2)",
-//           "rgba(153, 102, 255, 0.2)"
-//         ]
-//       }]
-//     },
-//   });
-
-// }
 // #endregion
 
 // #region ***  Callback-No Visualisation - callback___  ***********
@@ -323,14 +304,19 @@ const get_top_tijden = function () {
   handleData(`http://${lanIP}/api/v1/spelerinlog/`, show_top_tijden);
 }
 
-const get_top_tijden2 = function () {
-  console.log('get_top_tijden')
-  handleData(`http://${lanIP}/api/v1/spelerinlog/`, test);
+const get_history_spelers = function () {
+  console.log('get_history_spelers')
+  handleData(`http://${lanIP}/api/v1/spelerhistory/`, show_spelers_tijden);
 }
 
-const get_speler_data = function () {
-  console.log('get_speler_data')
-  handleData(`http://${lanIP}/api/v1/spelersinfo/137/`, show_speler_data);
+
+const get_speler_data = function (id_speler) {
+  console.log('get_speler_data', id_speler)
+  try {
+    handleData(`http://${lanIP}/api/v1/spelersinfo/${id_speler}/`, show_speler_data);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 

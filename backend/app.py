@@ -51,7 +51,7 @@ var_h = False
 var_i = False
 var_j = False
 id_rfid = 0
-spelerid =  ''
+speler = ''
 
 def setup_gpio():
     GPIO.setwarnings(False)
@@ -176,12 +176,14 @@ def vragen():
 def historiek_speler(spelerid):
     if request.method == 'GET':
         print('Historiek speler')
+        print(f'spelerid' , speler)
         data = DataRepository.get_tijden(spelerid)
+        print(data)
         return jsonify(geschied_speler=data)
 
 @app.route('/api/v1/spelerinlog/' , methods=['GET','POST'])
 def top_times():
-    global spelerid
+    global speler
     if request.method == 'GET':
         print('Top times')
         data = DataRepository.get_top_times()
@@ -192,25 +194,26 @@ def top_times():
         # print(request)
         gegevens = DataRepository.json_or_formdata(request)
         data = DataRepository.add_speler(gegevens['naam'],gegevens['kaartnummer'],datetime.now())
-        spelerid = data
-        socketio.emit('b2f_id', {'id': data} )
-        return jsonify(speler=data), 200
+        speler = data
+        print(f'spelerid', speler)
+        socketio.emit('b2f_id', {'id': speler} )
+        return jsonify(speler=data), 200 
+    
+@app.route('/api/v1/spelerhistory/' , methods=['GET'])
+def spelers_history():
+    if request.method == 'GET':
+        print('Speler historiek')
+        data = DataRepository.get_list_spelen()
+        print(data)
+        return jsonify(historiek=data)
+
+
 
 @socketio.on('f_2_b_servo')
 def f_2_b_servo():
     servo.test_range()
 
-@socketio.on('f_2_b_knop')
-def f_2_b_knop():
-    global var_b
-    global var_c
-    global var_g
-    global var_i
-    var_b = True
-    var_c = False
-    var_i = False
-    bcd.setup()
-    print('f_2_b_knop')
+
     
 @socketio.on('f_2_b_poweroff')
 def f_2_b_poweroff():
@@ -221,28 +224,44 @@ def f_2_b_poweroff():
     os.system("sudo shutdown -h now")
     
 
-    data = DataRepository.get_tijden(spelerid)
-    print(data)
 # START een thread op. Belangrijk!!! Debugging moet UIT staan op start van de server, anders start de thread dubbel op
 # werk enkel met de packages gevent en gevent-websocket.
 
 # convert mysql data to list
-def convert_to_list():
-    global spelerid
-    data = DataRepository.get_tijden(9)
-    print(data)
-    list = []
-    # print(data)
-    spel1 = data['spel_1']
-    spel2 = data['spel_2']
-    spel3 = data['spel_3']
-    spel4 = data['spel_4']
-    totale_tijd = data['totale_tijd']
-    nieuwe_lijst = [spel1, spel2, spel3, spel4, totale_tijd]    
-    list.append(nieuwe_lijst)
-    print(list)
-    socketio.emit('b2f_tijden', {'tijden': list} )
-    time.sleep(100)
+# def convert_to_list():
+#     global spelerid
+#     data = DataRepository.get_tijden(spelerid)
+#     print(data)
+#     list = []
+#     # print(data)
+#     spel1 = data['spel_1']
+#     spel2 = data['spel_2']
+#     spel3 = data['spel_3']
+#     spel4 = data['spel_4']
+#     totale_tijd = data['totale_tijd']
+#     nieuwe_lijst = [spel1, spel2, spel3, spel4, totale_tijd]    
+#     list.append(nieuwe_lijst)
+#     print(list)
+#     socketio.emit('b2f_tijden', {'tijden': list} )
+#     time.sleep(100)
+    
+@socketio.on('f_2_b_knop')
+def f_2_b_knop():
+    global var_b
+    global var_c
+    global var_i
+    global var_h
+    var_i = False
+    print(f'i',var_i)
+    var_h = False
+    print(f'h',var_h)
+    var_c = False
+    print(f'c',var_c)
+    var_b = True
+    print(f'b',var_b)
+    bcd.setup()
+    print('f_2_b_knop')
+    
 def start_thread_lees_knop():
     try:
         global starttijd
@@ -257,15 +276,18 @@ def start_thread_lees_knop():
         global var_i
         global var_j
         global id_rfid
-        global spelerid
+        global speler
         prev = 0
         waarde = 0
         neopixel.all_red()
         while True:
             if GPIO.input(13) == 1:
-                convert_to_list()
+                socketio.emit('b2f_id', {'id': 190} )
             if var_b == True:
+                # print('starting thread')
                 if var_c == False:
+                    i2c.open(1)
+                    time.sleep(0.1)
                     i2c.write_byte(0x20,0b11101111)
                     time.sleep(0.01)
                     i2c.write_byte(0x26,0b11111101)
@@ -281,6 +303,7 @@ def start_thread_lees_knop():
                     # print(waarde_id)
                     if waarde_id != 0:
                         DataRepository.insert_data(13,  1, datetime.now(), waarde_id , 'RFID gescand')
+                        waarde_id = 0
                         var_c = True
                         var_j = True
                         var_g = False
@@ -288,86 +311,92 @@ def start_thread_lees_knop():
                         lcd.send_instruction(0x01)
                         time.sleep(0.1)
                         lcd.wifi_adress()
-                if var_g == False:
-                    if var_d == False:
-                        if var_c == True:
-                            waarde_bcd = bcd.main_BCD()
-                            if waarde_bcd == 1:
-                                socketio.emit('BCD_B2F', {'BCD B2F': 'B2F'}, broadcast=True)
-                                spel_1 = datetime.now()
-                                var_d = True
-                                var_j = False
-                                print("bcd 1")
-                if var_d == True:
-                    if var_e == False:    
-                        neopixel.green_red_1_4()
-                        waarde_knop = quiz_game()
-                        print(waarde_knop)
-                    if waarde_knop == 1:
-                        spel_2 = datetime.now()
-                        var_e = True
-                        var_i = True
-                        print("e is true")
-                if var_e == True:     
-                    if var_f == False:
-                        time.sleep(0.5)
-                        neopixel.green_red_2_4()
-                        waarde_dungeons = led_game.dungeons_main()
-                        print(waarde_dungeons,"testtt")
-                        if waarde_dungeons == 1:
-                            spel_3 = datetime.now()
-                            var_i = False
-                            var_f = True
-                            print("is true")
-                if var_f == True:
-                    # i2c.open(1)
-                    # i2c.write_byte(0x26, 0b11111101)
-                    # time.sleep(0.01)
-                    waarde_servogame = 0
                     if var_g == False:
-                        neopixel.green_red_3_4()
-                        waarde_servogame = servo.main_servo_met_mpu()
-                        print(waarde_servogame , "servo")
-                        if waarde_servogame == 1:
-                            spel_4 = datetime.now()
-                            var_g = True
+                        if var_d == False:
+                            if var_c == True:
+                                print('rfid gescand, bij bcd')
+                                waarde_bcd = bcd.main_BCD()
+                                if waarde_bcd == 1:
+                                    socketio.emit('BCD_B2F', {'BCD B2F': 'B2F'}, broadcast=True)
+                                    spel_1 = datetime.now()
+                                    var_d = True
+                                    var_j = False
+                                    print("bcd 1")
+                    if var_d == True:
+                        if var_e == False:    
+                            neopixel.green_red_1_4()
+                            waarde_knop = quiz_game()
+                            print(waarde_knop)
+                        if waarde_knop == 1:
+                            spel_2 = datetime.now()
+                            var_e = True
+                            var_i = True
+                            print("e is true")
+                    if var_e == True:     
+                        if var_f == False:
+                            time.sleep(0.5)
+                            neopixel.green_red_2_4()
+                            waarde_dungeons = led_game.dungeons_main()
+                            print(waarde_dungeons,"testtt")
+                            if waarde_dungeons == 1:
+                                spel_3 = datetime.now()
+                                var_i = False
+                                var_f = True
+                                print("is true")
+                    if var_f == True:
+                        # i2c.open(1)
+                        # i2c.write_byte(0x26, 0b11111101)
+                        # time.sleep(0.01)
+                        waarde_servogame = 0
+                        if var_g == False:
+                            neopixel.green_red_3_4()
+                            waarde_servogame = servo.main_servo_met_mpu()
+                            print(waarde_servogame , "servo")
+                            if waarde_servogame == 1:
+                                spel_4 = datetime.now()
+                                var_g = True
+                                var_d = False
+                                var_e = False
+                                var_f = False
+    
+    
+            # va    r_h == True
+                
+            # ti    me.sleep(1)
+            #         # servo.main_servo_met_mpu()
+                
+                
+                if var_g == True:
+                    var_f = False
+                    print("truuuuuuuue")
+                    neopixel.all_green()
+                    if GPIO.input(13) == 1:
+                        waarde = GPIO.input(13)
+                        print("button pressed")
+                        neopixel.rainbow_cycle()
+                        if waarde != prev:
+                            socketio.emit('b2f_einde')
+                            print("spelerinfo geschreven in database")
+                            var_b = False
+                            var_g = False
                             var_h = True
-                            var_d = False
-                            var_e = False
-                            var_f = False
-
-
-            # var_h == True
-            
-            # time.sleep(1)
-            #     # servo.main_servo_met_mpu()
-            
-            
-            if var_g == True:
-                var_f = False
-                i2c.close() 
-                print("truuuuuuuue")
-                neopixel.all_green()
-                if GPIO.input(13) == 1:
-                    waarde = GPIO.input(13)
-                    print("button pressed")
+                            id_rfid = 0
+                            eindtijd = datetime.now()
+                            spel_1_d = spel_1 - starttijd
+                            spel_2_d = spel_2 - spel_1
+                            spel_3_d = spel_3 - spel_2 
+                            spel_4_d = spel_4 - spel_3
+                            tijd_database = eindtijd - starttijd
+                            DataRepository.update_tijden(spel_1_d, spel_2_d, spel_3_d , spel_4_d , tijd_database,speler)
+                            print(tijd_database)
+                            DataRepository.insert_data(7, 10, datetime.now(), waarde , 'Eindknop')
+                    waarde = prev
+                if var_h == True:
                     neopixel.rainbow_cycle()
-                    if waarde != prev:    
-                        print("spelerinfo geschreven in database")
-                        var_b = False
-                        var_g = False
-                        id_rfid = 0
-                        eindtijd = datetime.now()
-                        spel_1_d = spel_1 - starttijd
-                        spel_2_d = spel_2 - spel_1
-                        spel_3_d = spel_3 - spel_2 
-                        spel_4_d = eindtijd - spel_4
-                        tijd_database = eindtijd - starttijd
-                        DataRepository.update_tijden(spel_1_d, spel_2_d, spel_3_d , spel_4_d , tijd_database,spelerid)
-                        print(tijd_database)
-                        DataRepository.insert_data(10, 10, datetime.now(), waarde , 'Eindknop')
-                waarde = prev
-                    # time.sleep(1000)
+                        # time.sleep(1000)
+                
+            else:
+                time.sleep(1)
                 
             
     except Exception as e:
@@ -376,7 +405,7 @@ def start_thread_lees_knop():
 
 def lcd_ip():
     try:
-        time.sleep(15)
+        time.sleep(7.5)
         lcd.setup_lcd()
         #function set
         lcd.send_instruction(0x38)

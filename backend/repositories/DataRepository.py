@@ -43,7 +43,7 @@ class DataRepository:
     
     @staticmethod
     def historiek_data_ophalen():
-        sql = "SELECT volgnummer , deviceid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc limit 50"
+        sql = "SELECT volgnummer , deviceid, actiedatum , waarde , commentaar from Historiek Order by volgnummer Desc"
         return Database.get_rows(sql)
     
     @staticmethod
@@ -78,7 +78,7 @@ class DataRepository:
     
     @staticmethod 
     def get_top_times():
-        sql = "select * from tijd order by totale_tijd limit 3"
+        sql = "select s.naam, t.spel_1 ,t.spel_2,t.spel_3,t.spel_4,t.totale_tijd from tijd as t join speler as s on s.spelerID = t.spelerid order by t.totale_tijd limit 3"
         return Database.get_rows(sql)
     
     @staticmethod
@@ -86,3 +86,9 @@ class DataRepository:
         sql = "INSERT INTO speler (naam , kaartnummer, datum_gespeeld) VALUES (%s,%s,%s)"
         params = [naam, kaartnummer, datum_gespeeld]
         return Database.execute_sql(sql, params)
+    
+    
+    @staticmethod
+    def get_list_spelen():
+        sql = "select s.naam, t.spel_1 ,t.spel_2,t.spel_3,t.spel_4,t.totale_tijd from tijd as t join speler as s on s.spelerID = t.spelerid order by s.spelerid desc"
+        return Database.get_rows(sql)

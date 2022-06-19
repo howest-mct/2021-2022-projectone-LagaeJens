@@ -1,6 +1,7 @@
 from classen.bcd_classe import BCD
 from classen.dungeons import dungeons
 # from Servo import Servo_Met_MPU
+from class_neopixel import neopixel_class
 from classen.Class_I2C_LCD import LCD 
 from classen.test_rfid import rfid_lezen
 from time import sleep
@@ -13,6 +14,7 @@ i2c = SMBus(1)
 rs = 23
 e = 24
 lcd = LCD(rs,e)
+neopix = neopixel_class()
  
 def setup():
     print("Setup")
@@ -43,6 +45,7 @@ try:
     # sleep(0.05)
     test.setup()
     while True:
+        neopix.rainbow_cycle()
         # if var_a == False:
         #     id = rfid.uitlezen()
         #     waarde_id = id
@@ -58,9 +61,9 @@ try:
         # lcd.send_instruction(0x01) #display leegmaken
         # lcd.ip_adress_ophalen() 
         # lcd.send_instruction(0x0C)
-        dungeon.dungeons_main()
+        # dungeon.dungeons_main()
         # test.main_BCD()
-        sleep(1)
+        # sleep(1)
     
         
         
