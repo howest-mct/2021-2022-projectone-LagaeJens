@@ -2,11 +2,11 @@
 
 # Table of contents
 
-- [About Puzzlbox]
-- [Sensor & actuators]
-- [Technologies]
-- [The circuits]
-- [Instructables]
+- About Puzzlbox
+- Sensor & actuators
+- Technologies
+- The circuits
+- Instructables
 
 # About Puzzlbox
 
