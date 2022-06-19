@@ -67,7 +67,7 @@ These are all used programming languages and libraries.
 - [Flask](https://flask.palletsprojects.com/en/2.1.x/)
 - [Socketio](https://python-socketio.readthedocs.io/en/latest/)
 
-##Getting things started
+## Getting things started
 
 To configure the Pi please check out the detailed guide on my [instructables](https://www.instructables.com/PuzzlBox/) page.
 
