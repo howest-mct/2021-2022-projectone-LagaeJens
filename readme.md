@@ -5,7 +5,7 @@ Omschrijf het project. Doe dit in het markdown formaat.
 - [Syntax md](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 
 # Table of contents
-- [Voorbeeld 1]
+- [About Puzzlbox]
 - [Voorbeeld 2](https://github.com/tsungtwu/flask-example/blob/master/README.md)
 - [Voorbeeld 3](https://github.com/twbs/bootstrap/blob/main/README.md)
 - [Voorbeeld 4](https://www.makeareadme.com/)
@@ -53,6 +53,7 @@ The MPU6050 is used to control the servos. When you turn the MPU, the servos tur
 - Wat is de structuur van het project?
 - Wat moet er gebeuren met de database? Hoe krijgt de persoon dit up and running?
 
+#Features on site
   
 ## Instructables
 Plaats zeker een link naar de Instructables zodat het project kan nagebouwd worden!
