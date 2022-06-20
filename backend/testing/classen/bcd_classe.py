@@ -40,8 +40,8 @@ class BCD:
     def bcd_uitlezen(self): 
         waarde = self.i2c.read_byte(0x24)
         cijfer = (waarde & 0x0F) ^ 0x0F 
-        print(cijfer)
-        print(bin(cijfer)) 
+        # print(cijfer)
+        # print(bin(cijfer)) 
         return cijfer
     
     def setup(self):

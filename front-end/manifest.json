@@ -1,0 +1,11 @@
+{
+  "name": "Puzzlboz",
+  "short_name": "Puzzlbox",
+  "icons": [{
+    "src": "puzzle-piece-shape-handmade-draw-svgrepo-com.png",
+    "sizes": "512x512"
+  }],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}

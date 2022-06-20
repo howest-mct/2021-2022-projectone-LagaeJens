@@ -262,6 +262,7 @@ def f_2_b_knop():
     bcd.setup()
     print('f_2_b_knop')
     
+    
 def start_thread_lees_knop():
     try:
         global starttijd
@@ -281,11 +282,10 @@ def start_thread_lees_knop():
         waarde = 0
         neopixel.all_red()
         while True:
-            if GPIO.input(13) == 1:
-                socketio.emit('b2f_id', {'id': 190} )
             if var_b == True:
-                # print('starting thread')
+                print('starting thread')
                 if var_c == False:
+                    socketio.emit('gestart')
                     i2c.open(1)
                     time.sleep(0.1)
                     i2c.write_byte(0x20,0b11101111)
@@ -405,7 +405,7 @@ def start_thread_lees_knop():
 
 def lcd_ip():
     try:
-        time.sleep(7.5)
+        time.sleep(10)
         lcd.setup_lcd()
         #function set
         lcd.send_instruction(0x38)
@@ -449,6 +449,8 @@ def lees_mpu_thread_function():
     try:
         while True:
             try:
+                waarde = servo.mpu_data_to_front()
+                socketio.emit('b2f_mpu', {'b2f_mpu': waarde})
                 if var_f == True:
                     # print('test')
                     waarde = servo.mpu_data_to_front()
@@ -501,6 +503,8 @@ def lees_bcd_thread():
     try:
         vorige_waarde_bcd = 0
         while True:
+            waarde = bcd.bcd_uitlezen()
+            socketio.emit('BCD', {'BCD': waarde}, broadcast=True)
             if var_j == True:
                 i2c.open(1)
                 waarde = i2c.read_byte(0x24)
@@ -508,7 +512,6 @@ def lees_bcd_thread():
                 # print('test')
                 waarde = bcd.bcd_uitlezen()
                 socketio.emit('BCD', {'BCD': waarde}, broadcast=True)
-
                 if waarde != vorige_waarde_bcd:
                     print("ke geschreven")
                     DataRepository.insert_data(9, 9, datetime.now(), waarde , 'BCD waarde')

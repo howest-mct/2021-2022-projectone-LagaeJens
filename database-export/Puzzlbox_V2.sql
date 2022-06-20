@@ -1,2 +1,0 @@
-CREATE DATABASE  IF NOT EXISTS `puzzledoos` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `puzzledoos`;

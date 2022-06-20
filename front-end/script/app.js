@@ -2,26 +2,27 @@ const lanIP = `${window.location.hostname}:5000`;
 const socket = io(`http://${lanIP}`);
 
 let htmlsensor
+let htmlsensors
 let myChart
 let converted_data
 let id_speler
 let data_player
 
 const waardeNaarFrontend = function (data) {
-  let htmlstring = ''
-  console.log(data.knop)
-  console.log(document.querySelector('.js-placeholder'))
-  htmlsensor = document.querySelector('.js-placeholder').innerHTML = `<p>${data.knop}</p>`
-  // htmlstring =`<p>${data.knop}</p>`
-  // htmlsensor.innerhtml = htmlstring
+  let htmlstrings = ''
+  // console.log(data.b2f_mpu)
+  console.log(document.querySelector('.js-BCD'))
+  htmlsensors = document.querySelector('.js-BCD').innerHTML = `<p>BCD waarde: ${data.BCD}</p>`
+  // htmlstrings = `<p>Waarde MPU: ${data.b2f_mpu}</p>`
+  // htmlsensors.innerhtml = htmlstrings
 }
 
-const waardeNaarFrontendBCD = function (data) {
+const waardeNaarFrontendMPU = function (data) {
   let htmlstring = ''
   // console.log(data.BCD)
-  // console.log(document.querySelector('.js-placeholderr'))
-  htmlsensor = document.querySelector('.js-placeholderr').innerHTML = `<p>${data.BCD}</p>`
-  // htmlstring =`<p>${data.knop}</p>`
+  console.log(document.querySelector('.js-mup'))
+  htmlsensor = document.querySelector('.js-mup').innerHTML = `<p>MPU waarde: ${data.b2f_mpu}</p>`
+  // htmlstring = `<p>BCD waarde: ${data.knop}</p>`
   // htmlsensor.innerhtml = htmlstring
 }
 
@@ -33,13 +34,13 @@ const listenToSocket = function () {
     console.log("verbonden met socket webserver");
   });
 
-  socket.on('BCD', function (data) {
+  socket.on('b2f_mpu', function (data) {
     // console.log(data)
-    waardeNaarFrontendBCD(data)
+    waardeNaarFrontendMPU(data)
   });
 
 
-  socket.on('knop', function (data) {
+  socket.on('BCD', function (data) {
     console.log(data)
     waardeNaarFrontend(data)
   });
@@ -63,6 +64,15 @@ const listenToSocket = function () {
   socket.on('b2f_einde', function () {
     console.log("einde")
     window.location.href = "spelersinfo.html"
+  })
+  socket.on('gestart', function () {
+    console.log("gestart")
+  })
+  socket.on('gestart2', function () {
+    console.log("gestart2")
+  })
+  socket.on('gestart3', function () {
+    console.log("gestart3")
   })
 };
 
@@ -94,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   if (htmlsensorinfo) {
     get_Data_historiek();
-    waardeNaarFrontendBCD()
+    waardeNaarFrontendMPU()
     waardeNaarFrontend()
   }
 
