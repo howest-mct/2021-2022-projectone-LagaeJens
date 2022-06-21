@@ -14,7 +14,7 @@ from testing.classen.dungeons import dungeons
 from testing.classen.Class_I2C_LCD import LCD
 from testing.class_neopixel import neopixel_class
 from testing.classen.test_rfid import rfid_lezen
-
+from testing.classen.classe_mpu import MPU6050
 
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
@@ -36,7 +36,7 @@ led_game = dungeons()
 neopixel = neopixel_class()
 rfid = rfid_lezen
 reader = SimpleMFRC522()
-
+mpu = MPU6050(0x68,16,250)
 
 # Code voor Hardware
 starttijd = 0
@@ -260,6 +260,7 @@ def f_2_b_knop():
     var_b = True
     print(f'b',var_b)
     bcd.setup()
+    neopixel.all_red()
     print('f_2_b_knop')
     
     
@@ -280,7 +281,7 @@ def start_thread_lees_knop():
         global speler
         prev = 0
         waarde = 0
-        neopixel.all_red()
+        mpu.setup(0x68)
         while True:
             if var_b == True:
                 print('starting thread')
@@ -323,8 +324,10 @@ def start_thread_lees_knop():
                                     var_j = False
                                     print("bcd 1")
                     if var_d == True:
-                        if var_e == False:    
+                        if var_e == False:
+                            time.sleep(0.1)    
                             neopixel.green_red_1_4()
+                            time.sleep(0.1)
                             waarde_knop = quiz_game()
                             print(waarde_knop)
                         if waarde_knop == 1:
